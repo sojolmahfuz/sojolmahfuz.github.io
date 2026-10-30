@@ -101,6 +101,8 @@
       phonePrimary: "+880 1701 012207",
       phoneSecondary: "+880 1717 704609",
       location: "Nestor Living, 88/7, South Badda, Dhaka-1212, Bangladesh",
+      linkedinUrl: "https://bd.linkedin.com/in/al-amin-mahfuz-05860220b",
+      facebookUrl: "https://web.facebook.com/alaminmahfuz.sojol/",
       badgeRoleTitle: "Senior Lecturer",
       badgeRoleSub: "RSTU, Natore",
       metrics: {

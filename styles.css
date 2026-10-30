@@ -2124,6 +2124,68 @@ html[data-theme="light"] .sig-img {
   background: rgba(0, 240, 255, 0.16);
 }
 
+/* ==================== SOCIAL PROFILE PILLS & CONTACT DOCK ==================== */
+.hero-social-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.4rem;
+}
+
+.social-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.48rem 0.95rem;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.25s var(--ease-out-expo), border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
+}
+
+.social-linkedin svg {
+  color: #38bdf8;
+}
+
+.social-facebook svg {
+  color: #60a5fa;
+}
+
+.social-linkedin:hover {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.14);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.24);
+}
+
+.social-facebook:hover {
+  border-color: #60a5fa;
+  background: rgba(96, 165, 250, 0.14);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.24);
+}
+
+.social-uplink-dock {
+  padding: 1.15rem 1.25rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(124, 92, 255, 0.14));
+  border: 1px solid var(--border-bright);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .hero-social-row {
+    justify-content: center;
+  }
+}
+
 @media (max-width: 1024px) {
   .projects-public-grid {
     grid-template-columns: 1fr;

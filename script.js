@@ -654,6 +654,17 @@
     const locEl = document.getElementById("channel-location-val");
     if (locEl && p.location) locEl.textContent = p.location;
 
+    if (p.linkedinUrl) {
+      document.querySelectorAll("[data-social-linkedin]").forEach((a) => {
+        a.href = p.linkedinUrl;
+      });
+    }
+    if (p.facebookUrl) {
+      document.querySelectorAll("[data-social-facebook]").forEach((a) => {
+        a.href = p.facebookUrl;
+      });
+    }
+
     const footName = document.getElementById("footer-brand-name");
     const footHead = document.getElementById("footer-brand-headline");
     if (footName && (p.firstName || p.lastName)) {
@@ -773,7 +784,7 @@
       hire: {
         tool: 'mcp.cv.get_contact_channels()',
         answer:
-          "Ready to collaborate! Reach Al Amin directly at sojol.cub@gmail.com or +880 1701 012207 / +880 1717 704609 (South Badda, Dhaka-1212), or send an instant message via the Direct Transmission form in the Contact Command Deck below."
+          "Ready to collaborate! Reach Al Amin directly at sojol.cub@gmail.com or +880 1701 012207 / +880 1717 704609 (South Badda, Dhaka-1212), connect on LinkedIn (bd.linkedin.com/in/al-amin-mahfuz-05860220b) or Facebook (web.facebook.com/alaminmahfuz.sojol), or send an instant message via the Direct Transmission form below."
       }
     };
 

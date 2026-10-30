@@ -565,6 +565,8 @@
     setVal("pf-location", p.location || "");
     setVal("pf-phone1", p.phonePrimary || "");
     setVal("pf-phone2", p.phoneSecondary || "");
+    setVal("pf-linkedin", p.linkedinUrl || "https://bd.linkedin.com/in/al-amin-mahfuz-05860220b");
+    setVal("pf-facebook", p.facebookUrl || "https://web.facebook.com/alaminmahfuz.sojol/");
     setVal("pf-m-exp", m.yearsExp ?? 7);
     setVal("pf-m-llm", m.llmApis ?? 3);
     setVal("pf-m-tech", m.totalTech ?? 34);
@@ -596,6 +598,8 @@
         location: val("pf-location"),
         phonePrimary: val("pf-phone1"),
         phoneSecondary: val("pf-phone2"),
+        linkedinUrl: val("pf-linkedin"),
+        facebookUrl: val("pf-facebook"),
         metrics: {
           yearsExp: Number(val("pf-m-exp")) || 7,
           llmApis: Number(val("pf-m-llm")) || 3,
