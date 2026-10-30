@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Al Amin Mahfuz — Senior Lecturer in CSE | Full Stack Developer | AI Expert</title>
+  <meta name="description" content="Futuristic portfolio of Al Amin Mahfuz — Senior Lecturer in Computer Science & Engineering at Rajshahi Science and Technology University (RSTU), Natore, Full Stack Developer, and AI Expert specializing in LLMs, AI Agents, MCP, and Deep Learning." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ==================== BOOT PRELOADER ==================== -->
+  <div id="boot-screen" class="boot-screen" aria-hidden="true">
+    <div class="boot-inner">
+      <div class="boot-logo">
+        <span class="boot-bracket">[</span>
+        <span class="boot-monogram">AAM</span>
+        <span class="boot-slash">//</span>
+        <span class="boot-year">NEURAL.OS</span>
+        <span class="boot-bracket">]</span>
+      </div>
+      <div class="boot-bar-track">
+        <div id="boot-bar-fill" class="boot-bar-fill"></div>
+      </div>
+      <div class="boot-meta">
+        <span id="boot-status">INITIALIZING NEURAL SYNAPSE ENGINE...</span>
+        <span id="boot-percent">00%</span>
+      </div>
+      <button id="boot-skip" class="boot-skip" type="button">SKIP INTRO [ESC]</button>
+    </div>
+  </div>
+
+  <!-- ==================== SCROLL PROGRESS LASER ==================== -->
+  <div class="scroll-laser-track" aria-hidden="true">
+    <div id="scroll-laser" class="scroll-laser"></div>
+  </div>
+
+  <!-- ==================== CUSTOM CYBERNETIC CURSOR ==================== -->
+  <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+  <div id="cursor-ring" class="cursor-ring" aria-hidden="true">
+    <span id="cursor-label" class="cursor-label"></span>
+  </div>
+
+  <!-- ==================== AMBIENT NEURAL CANVAS & AURORA ==================== -->
+  <canvas id="neural-canvas" aria-hidden="true"></canvas>
+  <div class="ambient-aurora" aria-hidden="true">
+    <div class="aurora-orb orb-1"></div>
+    <div class="aurora-orb orb-2"></div>
+    <div class="aurora-orb orb-3"></div>
+    <div class="cyber-grid-overlay"></div>
+  </div>
+
+  <!-- ==================== FLOATING HUD NAVBAR ==================== -->
+  <header id="site-header" class="site-header">
+    <nav class="hud-nav" aria-label="Primary Navigation">
+      <a href="#hero" class="brand-mark magnetic" data-cursor="HOME">
+        <span class="brand-pulse"></span>
+        <span class="brand-text">AL AMIN <em>MAHFUZ</em></span>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#hero" class="nav-link active" data-section="hero">Overview</a></li>
+        <li><a href="#ai-lab" class="nav-link" data-section="ai-lab">AI Lab</a></li>
+        <li><a href="#arsenal" class="nav-link" data-section="arsenal">Skills</a></li>
+        <li><a href="#experience" class="nav-link" data-section="experience">Experience</a></li>
+        <li id="nav-projects-li"><a href="#projects" class="nav-link" data-section="projects">Projects</a></li>
+        <li><a href="#clients" class="nav-link" data-section="clients">Clients</a></li>
+        <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="dhaka-clock" title="Local Time in Dhaka, Bangladesh">
+          <span class="clock-dot"></span>
+          <span id="live-clock">DAC --:--:--</span>
+        </div>
+
+        <button id="theme-toggle" class="icon-btn magnetic" type="button" aria-label="Toggle color theme" data-cursor="THEME">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <a href="admin.html" class="btn btn-sm btn-admin-hud magnetic" title="Admin Command Login" data-cursor="ADMIN">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.1">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>Admin</span>
+        </a>
+
+        <a href="assets/Al_Amin_Mahfuz_CV_2026.pdf" download="Al Amin Mahfuz CV - Updated 2026.pdf" class="btn btn-sm btn-glow magnetic" data-cv-download="pdf-nav" data-cursor="PDF">
+          <span>CV 2026</span>
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+        </a>
+
+        <button id="mobile-menu-btn" class="icon-btn mobile-only" type="button" aria-label="Open menu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ==================== HERO SECTION ==================== -->
+    <section id="hero" class="hero-section section-spy">
+      <div class="container hero-grid">
+        <!-- Left Column: Telemetry + Identity -->
+        <div class="hero-copy">
+          <div class="status-pill reveal-up" id="hero-status-pill">
+            <span class="status-beacon" id="hero-status-beacon"></span>
+            <span class="mono-tag" id="hero-avail-text">AVAILABLE FOR AI ARCHITECTURE, RESEARCH &amp; FULL-STACK ROLES</span>
+          </div>
+
+          <p class="hero-kicker reveal-up" style="--delay: 0.08s">
+            <span class="mono-accent">&gt;_</span> HELLO WORLD, I AM
+          </p>
+
+          <h1 class="hero-title reveal-up" style="--delay: 0.14s">
+            <span id="hero-first-name" class="scramble-text" data-value="AL AMIN">AL AMIN</span>
+            <span id="hero-last-name" class="gradient-name scramble-text" data-value="MAHFUZ">MAHFUZ</span>
+          </h1>
+
+          <div class="hero-role-bar reveal-up" style="--delay: 0.2s">
+            <span class="role-prefix">SYS.ROLE //</span>
+            <span id="typewriter-text" class="typewriter-text">AI Expert &amp; Agentic Architect</span>
+            <span class="typewriter-caret" aria-hidden="true"></span>
+          </div>
+
+          <p id="hero-bio" class="hero-description reveal-up" style="--delay: 0.26s">
+            Computer Science &amp; Engineering <strong>Senior Lecturer at Rajshahi Science and Technology University (RSTU), Natore</strong>,
+            <strong>Full Stack Developer</strong>, and <strong>AI Expert</strong> with <strong>7+ years of combined experience</strong>.
+            I fuse modern web architectures (<span>ReactJS</span>, <span>NextJS</span>, <span>NodeJS</span>, <span>Django</span>)
+            with frontier AI systems — building autonomous <strong>AI Agents</strong>, <strong>MCP workflows</strong>,
+            production <strong>LLM integrations</strong>, and <strong>Deep Learning</strong> models in Python.
+          </p>
+
+          <div class="hero-cta-group reveal-up" style="--delay: 0.32s">
+            <a href="#ai-lab" class="btn btn-primary magnetic" data-cursor="LAUNCH">
+              <span>Explore AI Command Lab</span>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M13 5l7 7-7 7"/>
+              </svg>
+            </a>
+            <a href="assets/Al_Amin_Mahfuz_CV_2026.pdf" download="Al Amin Mahfuz CV - Updated 2026.pdf" class="btn btn-glass magnetic" data-cv-download="pdf-hero" data-cursor="DOWNLOAD">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <polyline points="9 15 12 18 15 15"/>
+              </svg>
+              <span>Download CV (PDF)</span>
+            </a>
+            <a href="#contact" class="btn btn-outline magnetic" data-cursor="CONNECT">
+              <span>Initiate Contact</span>
+            </a>
+          </div>
+
+          <!-- Quick AI Tool Badges -->
+          <div class="hero-ai-strip reveal-up" style="--delay: 0.38s">
+            <span class="strip-label">DAILY AI STACK</span>
+            <div class="strip-chips">
+              <span class="mini-chip">Claude</span>
+              <span class="mini-chip">Gemini</span>
+              <span class="mini-chip">ChatGPT</span>
+              <span class="mini-chip">MCP Agents</span>
+              <span class="mini-chip">Cursor</span>
+              <span class="mini-chip">Windsurf</span>
+              <span class="mini-chip">Antigravity</span>
+              <span class="mini-chip">Copilot</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Holographic Orbital Portrait Core -->
+        <div class="hero-visual reveal-scale" style="--delay: 0.18s">
+          <div class="holo-pod tilt-card" data-tilt-max="10">
+            <!-- Rotating SVG Orbital Rings -->
+            <svg class="orbital-svg orbital-outer" viewBox="0 0 420 420" aria-hidden="true">
+              <defs>
+                <linearGradient id="orbGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.9" />
+                  <stop offset="50%" stop-color="#7c5cff" stop-opacity="0.35" />
+                  <stop offset="100%" stop-color="#1fb5c4" stop-opacity="0.85" />
+                </linearGradient>
+              </defs>
+              <circle cx="210" cy="210" r="198" fill="none" stroke="url(#orbGrad1)" stroke-width="1.2" stroke-dasharray="14 10 4 10" />
+              <circle cx="210" cy="12" r="5" fill="#00f0ff" />
+              <circle cx="408" cy="210" r="4" fill="#7c5cff" />
+              <circle cx="210" cy="408" r="3.5" fill="#1fb5c4" />
+            </svg>
+
+            <svg class="orbital-svg orbital-inner" viewBox="0 0 360 360" aria-hidden="true">
+              <circle cx="180" cy="180" r="168" fill="none" stroke="rgba(124, 92, 255, 0.45)" stroke-width="1.5" stroke-dasharray="48 22" />
+              <circle cx="180" cy="12" r="4" fill="#a78bfa" />
+            </svg>
+
+            <!-- Portrait Core -->
+            <div class="portrait-plasma-ring">
+              <div class="portrait-frame">
+                <img src="assets/profile.png" alt="Al Amin Mahfuz — Senior Lecturer in CSE, Full Stack Developer & AI Expert" class="portrait-img" />
+                <div class="holo-scanline" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <!-- Floating Telemetry Badges -->
+            <div class="float-badge badge-tl">
+              <span class="badge-icon">⚡</span>
+              <div>
+                <strong>AI Expert</strong>
+                <span>LLMs • Agents • MCP</span>
+              </div>
+            </div>
+
+            <div class="float-badge badge-tr">
+              <span class="badge-icon">🎓</span>
+              <div>
+                <strong id="badge-role-title">Senior Lecturer</strong>
+                <span id="badge-role-sub">RSTU, Natore</span>
+              </div>
+            </div>
+
+            <div class="float-badge badge-bl">
+              <span class="badge-icon">🧠</span>
+              <div>
+                <strong>Deep Learning</strong>
+                <span>PyTorch • TensorFlow</span>
+              </div>
+            </div>
+
+            <div class="float-badge badge-br">
+              <span class="badge-icon">🚀</span>
+              <div>
+                <strong>Full Stack</strong>
+                <span>React • Next • Django</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Animated Telemetry Metrics Bar -->
+      <div class="container">
+        <div class="metrics-bar reveal-up" style="--delay: 0.42s">
+          <div class="metric-item">
+            <div class="metric-value"><span id="metric-exp" class="counter" data-target="7">0</span><span class="metric-suffix">+</span></div>
+            <div class="metric-label">Years Combined Experience</div>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <div class="metric-value"><span id="metric-llm" class="counter" data-target="3">0</span><span class="metric-suffix"> Frontier</span></div>
+            <div class="metric-label">LLM APIs (OpenAI • Gemini • Claude)</div>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <div class="metric-value"><span id="metric-tech" class="counter" data-target="34">0</span><span class="metric-suffix">+</span></div>
+            <div class="metric-label">AI, Web &amp; Database Technologies</div>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-item">
+            <div class="metric-value"><span id="metric-stu" class="counter" data-target="1000">0</span><span class="metric-suffix">+</span></div>
+            <div class="metric-label">CSE Students Taught &amp; Mentored</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== INFINITE KINETIC TECH MARQUEE ==================== -->
+    <div class="marquee-shell" aria-label="Technology Stack Stream">
+      <div class="marquee-row marquee-left">
+        <div class="marquee-track">
+          <span>PROMPT ENGINEERING</span><i class="sep">◆</i>
+          <span>OPENAI GPT API</span><i class="sep">◆</i>
+          <span>GOOGLE GEMINI</span><i class="sep">◆</i>
+          <span>CLAUDE ANTHROPIC</span><i class="sep">◆</i>
+          <span>AI AGENTS &amp; MCP</span><i class="sep">◆</i>
+          <span>DEEP LEARNING</span><i class="sep">◆</i>
+          <span>PYTORCH &amp; TENSORFLOW</span><i class="sep">◆</i>
+          <span>GITHUB COPILOT</span><i class="sep">◆</i>
+          <span>CURSOR • WINDSURF • ANTIGRAVITY</span><i class="sep">◆</i>
+          <!-- Duplicate for seamless loop -->
+          <span>PROMPT ENGINEERING</span><i class="sep">◆</i>
+          <span>OPENAI GPT API</span><i class="sep">◆</i>
+          <span>GOOGLE GEMINI</span><i class="sep">◆</i>
+          <span>CLAUDE ANTHROPIC</span><i class="sep">◆</i>
+          <span>AI AGENTS &amp; MCP</span><i class="sep">◆</i>
+          <span>DEEP LEARNING</span><i class="sep">◆</i>
+          <span>PYTORCH &amp; TENSORFLOW</span><i class="sep">◆</i>
+          <span>GITHUB COPILOT</span><i class="sep">◆</i>
+          <span>CURSOR • WINDSURF • ANTIGRAVITY</span><i class="sep">◆</i>
+        </div>
+      </div>
+
+      <div class="marquee-row marquee-right">
+        <div class="marquee-track">
+          <span>REACTJS &amp; NEXTJS</span><i class="sep">✦</i>
+          <span>REACT NATIVE</span><i class="sep">✦</i>
+          <span>NODEJS &amp; EXPRESSJS</span><i class="sep">✦</i>
+          <span>PYTHON &amp; DJANGO</span><i class="sep">✦</i>
+          <span>C++ ALGORITHMS</span><i class="sep">✦</i>
+          <span>TAILWIND CSS</span><i class="sep">✦</i>
+          <span>POSTGRESQL • MONGODB • MYSQL</span><i class="sep">✦</i>
+          <span>REST API &amp; FIREBASE</span><i class="sep">✦</i>
+          <span>SENIOR LECTURER IN CSE @ RSTU</span><i class="sep">✦</i>
+          <!-- Duplicate for seamless loop -->
+          <span>REACTJS &amp; NEXTJS</span><i class="sep">✦</i>
+          <span>REACT NATIVE</span><i class="sep">✦</i>
+          <span>NODEJS &amp; EXPRESSJS</span><i class="sep">✦</i>
+          <span>PYTHON &amp; DJANGO</span><i class="sep">✦</i>
+          <span>C++ ALGORITHMS</span><i class="sep">✦</i>
+          <span>TAILWIND CSS</span><i class="sep">✦</i>
+          <span>POSTGRESQL • MONGODB • MYSQL</span><i class="sep">✦</i>
+          <span>REST API &amp; FIREBASE</span><i class="sep">✦</i>
+          <span>SENIOR LECTURER IN CSE @ RSTU</span><i class="sep">✦</i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== AI EXPERTISE & INTERACTIVE MCP AGENT LAB ==================== -->
+    <section id="ai-lab" class="section section-spy">
+      <div class="container">
+        <div class="section-header reveal-up">
+          <span class="section-eyebrow">01 // ARTIFICIAL INTELLIGENCE ARCHITECTURE</span>
+          <h2 class="section-title">
+            <span class="scramble-on-view" data-value="AI Expertise">AI Expertise</span> &amp;
+            <span class="text-gradient">Agentic Systems</span>
+          </h2>
+          <p class="section-subtitle">
+            Bridging frontier Large Language Models, Model Context Protocol (MCP) tool-use, and Python neural networks with production full-stack applications.
+          </p>
+        </div>
+
+        <!-- 5 Spotlight 3D Tilt Bento Grid -->
+        <div class="ai-bento-grid">
+          <article class="bento-card tilt-card spotlight-card reveal-up" style="--delay: 0.05s">
+            <div class="card-glow"></div>
+            <div class="bento-top">
+              <div class="bento-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <span class="bento-index">AI.01</span>
+            </div>
+            <h3>Prompt Engineering</h3>
+            <p>
+              Architects deterministic system instructions, structured JSON output schemas, chain-of-thought reasoning scaffolds, and few-shot exemplars for high-reliability LLM behavior.
+            </p>
+            <div class="card-tags">
+              <span>System Prompts</span>
+              <span>Few-Shot</span>
+              <span>Structured Outputs</span>
+            </div>
+          </article>
+
+          <article class="bento-card tilt-card spotlight-card reveal-up" style="--delay: 0.1s">
+            <div class="card-glow"></div>
+            <div class="bento-top">
+              <div class="bento-icon icon-violet">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+                </svg>
+              </div>
+              <span class="bento-index">AI.02</span>
+            </div>
+            <h3>LLM API Integration</h3>
+            <p>
+              Embeds <strong>OpenAI GPT</strong>, <strong>Google Gemini</strong>, and <strong>Anthropic Claude</strong> APIs into NodeJS, Django, and NextJS platforms with real-time token streaming and intelligent automation.
+            </p>
+            <div class="card-tags">
+              <span>OpenAI API</span>
+              <span>Google Gemini</span>
+              <span>Claude API</span>
+            </div>
+          </article>
+
+          <article class="bento-card tilt-card spotlight-card reveal-up" style="--delay: 0.15s">
+            <div class="card-glow"></div>
+            <div class="bento-top">
+              <div class="bento-icon icon-emerald">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+              </div>
+              <span class="bento-index">AI.03</span>
+            </div>
+            <h3>AI Agents &amp; MCP</h3>
+            <p>
+              Designs autonomous multi-step agentic workflows where LLMs invoke external tools, query databases, and orchestrate tasks via <strong>Model Context Protocol (MCP)</strong>.
+            </p>
+            <div class="card-tags">
+              <span>Agentic Workflows</span>
+              <span>Model Context Protocol</span>
+              <span>Tool Calling</span>
+            </div>
+          </article>
+
+          <article class="bento-card tilt-card spotlight-card reveal-up" style="--delay: 0.2s">
+            <div class="card-glow"></div>
+            <div class="bento-top">
+              <div class="bento-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+              </div>
+              <span class="bento-index">AI.04</span>
+            </div>
+            <h3>Deep Learning &amp; Neural Eng.</h3>
+            <p>
+              Designs, trains, and evaluates neural network architectures in Python using <strong>TensorFlow</strong>, <strong>Keras</strong>, and <strong>PyTorch</strong> grounded in linear algebra &amp; probability theory.
+            </p>
+            <div class="card-tags">
+              <span>PyTorch</span>
+              <span>TensorFlow</span>
+              <span>Keras</span>
+              <span>Python</span>
+            </div>
+          </article>
+
+          <article class="bento-card bento-wide tilt-card spotlight-card reveal-up" style="--delay: 0.25s">
+            <div class="card-glow"></div>
+            <div class="bento-wide-inner">
+              <div>
+                <div class="bento-top">
+                  <div class="bento-icon icon-violet">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <polyline points="16 18 22 12 16 6"></polyline>
+                      <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                  </div>
+                  <span class="bento-index">AI.05 // HYPER-VELOCITY ENGINEERING</span>
+                </div>
+                <h3>AI-Assisted Full-Stack Software Engineering</h3>
+                <p>
+                  Harnesses agentic IDEs and coding copilots — <strong>GitHub Copilot</strong>, <strong>Cursor</strong>, <strong>Windsurf</strong>, and <strong>Antigravity</strong> — to accelerate full-stack architecture, automated testing, deep debugging, code refactoring, and technical documentation without compromising engineering rigor.
+                </p>
+              </div>
+              <div class="ide-constellation">
+                <div class="ide-pill"><span>⌘</span> Antigravity</div>
+                <div class="ide-pill"><span>⚡</span> Cursor</div>
+                <div class="ide-pill"><span>🌊</span> Windsurf</div>
+                <div class="ide-pill"><span>✦</span> GitHub Copilot</div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- INTERACTIVE MCP AI TWIN TERMINAL -->
+        <div class="ai-terminal-wrapper reveal-up" style="--delay: 0.2s">
+          <div class="terminal-window spotlight-card">
+            <div class="terminal-topbar">
+              <div class="terminal-dots">
+                <span class="dot-red"></span>
+                <span class="dot-amber"></span>
+                <span class="dot-green"></span>
+              </div>
+              <div class="terminal-title">
+                <span class="pulse-mini"></span>
+                <span>MAHFUZ.AI // INTERACTIVE MCP AGENT CONSOLE</span>
+              </div>
+              <div class="model-switcher" role="group" aria-label="Simulated Model Selector">
+                <button type="button" class="model-pill active" data-model="Claude">Claude</button>
+                <button type="button" class="model-pill" data-model="Gemini">Gemini</button>
+                <button type="button" class="model-pill" data-model="GPT">GPT</button>
+              </div>
+            </div>
+
+            <div class="terminal-body" id="terminal-output" aria-live="polite">
+              <div class="term-msg term-system">
+                <span class="term-badge">MCP READY</span>
+                <span>Connected to <code>al_amin_mahfuz_cv_2026.mcp</code> — Select a prompt below or ask anything about Al Amin's AI skills, full-stack work, or academic career!</span>
+              </div>
+            </div>
+
+            <div class="terminal-prompts">
+              <button type="button" class="prompt-chip" data-query="ai">⚡ What AI &amp; MCP systems do you build?</button>
+              <button type="button" class="prompt-chip" data-query="fullstack">🚀 Full-Stack architecture?</button>
+              <button type="button" class="prompt-chip" data-query="teaching">🎓 Academic role at RSTU &amp; CUB?</button>
+              <button type="button" class="prompt-chip" data-query="clients">🏛️ Notable clients &amp; ICPC?</button>
+              <button type="button" class="prompt-chip" data-query="hire">📩 How can we collaborate?</button>
+            </div>
+
+            <form id="terminal-form" class="terminal-input-row" autocomplete="off">
+              <span class="term-prompt-char">&gt;</span>
+              <input
+                type="text"
+                id="terminal-input"
+                placeholder="Ask Mahfuz's AI Agent (e.g., 'What databases or deep learning tools does he use?')..."
+                aria-label="Ask Mahfuz AI Twin"
+              />
+              <button type="submit" class="btn btn-sm btn-primary magnetic" data-cursor="EXECUTE">
+                <span>Run Agent</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TECHNICAL ARSENAL (FILTERABLE MATRIX) ==================== -->
+    <section id="arsenal" class="section section-spy">
+      <div class="container">
+        <div class="section-header reveal-up">
+          <span class="section-eyebrow">02 // TECHNICAL CAPABILITIES</span>
+          <h2 class="section-title">
+            Full-Spectrum <span class="text-gradient scramble-on-view" data-value="Tech Arsenal">Tech Arsenal</span>
+          </h2>
+          <p class="section-subtitle">
+            Interactive capability matrix spanning AI/LLMs, modern frontend &amp; mobile UI, scalable backends, relational/NoSQL databases, and mathematical foundations.
+          </p>
+        </div>
+
+        <div class="filter-tabs reveal-up" role="tablist" aria-label="Skill Categories">
+          <button type="button" class="filter-btn active" data-filter="all">All Stack</button>
+          <button type="button" class="filter-btn" data-filter="ai">AI, LLMs &amp; IDEs</button>
+          <button type="button" class="filter-btn" data-filter="frontend">Frontend &amp; Mobile</button>
+          <button type="button" class="filter-btn" data-filter="backend">Backend &amp; Languages</button>
+          <button type="button" class="filter-btn" data-filter="database">Databases</button>
+          <button type="button" class="filter-btn" data-filter="foundations">Math, OS &amp; Creative</button>
+        </div>
+
+        <div id="skills-grid" class="skills-grid">
+          <!-- Populated & animated via script.js for crisp filter choreography + noscript fallback -->
+          <noscript>
+            <p>Python, C++, JavaScript, ChatGPT, Google Gemini, Claude, GitHub Copilot, Cursor, Windsurf, Antigravity, Prompt Engineering, AI Agents, MCP, TensorFlow, PyTorch, Keras, ReactJS, NextJS, React Native, Tailwind CSS, Bootstrap, NodeJS, ExpressJS, Django, MySQL, PostgreSQL, MongoDB, SQL Server, Firebase.</p>
+          </noscript>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PROFESSIONAL EXPERIENCE (LASER TIMELINE) ==================== -->
+    <section id="experience" class="section section-spy">
+      <div class="container">
+        <div class="section-header reveal-up">
+          <span class="section-eyebrow">03 // CAREER TRAJECTORY</span>
+          <h2 class="section-title">
+            Professional <span class="text-gradient scramble-on-view" data-value="Experience">Experience</span>
+          </h2>
+          <p class="section-subtitle">
+            7+ years combining university computer science instruction, national programming contest operations, and full-stack production software delivery.
+          </p>
+        </div>
+
+        <div class="timeline" id="experience-timeline">
+          <div class="timeline-rail" aria-hidden="true">
+            <div class="timeline-laser" id="timeline-laser"></div>
+          </div>
+
+          <!-- Role 1 -->
+          <article class="timeline-item reveal-left">
+            <div class="timeline-node" aria-hidden="true"><span></span></div>
+            <div class="timeline-card tilt-card spotlight-card">
+              <div class="timeline-meta">
+                <span class="timeline-date">2026 – PRESENT</span>
+                <span class="timeline-badge live">CURRENT ROLE</span>
+              </div>
+              <h3 class="timeline-role">Senior Lecturer — Department of CSE</h3>
+              <p class="timeline-org">Rajshahi Science and Technology University (RSTU), Natore</p>
+              <ul class="timeline-list">
+                <li>Deliver undergraduate Computer Science &amp; Engineering lectures and labs across programming, software engineering, web technologies, and AI fundamentals.</li>
+                <li>Supervise undergraduate thesis groups, full-stack software capstones, and AI-driven student research works.</li>
+                <li>Design outcome-based CSE curricula, interactive lab assessments, and modern digital learning materials.</li>
+                <li>Contribute to departmental academic planning, examination committees, and faculty leadership initiatives.</li>
+              </ul>
+              <div class="card-tags">
+                <span>Senior CSE Faculty</span>
+                <span>Thesis &amp; Research Supervision</span>
+                <span>AI &amp; Web Curricula</span>
+                <span>Academic Leadership</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Role 2 -->
+          <article class="timeline-item reveal-right">
+            <div class="timeline-node" aria-hidden="true"><span></span></div>
+            <div class="timeline-card tilt-card spotlight-card">
+              <div class="timeline-meta">
+                <span class="timeline-date">2022 – 2026</span>
+                <span class="timeline-badge">ACADEMIA</span>
+              </div>
+              <h3 class="timeline-role">Lecturer — Department of CSE</h3>
+              <p class="timeline-org">Canadian University of Bangladesh (CUB)</p>
+              <ul class="timeline-list">
+                <li>Delivered undergraduate Computer Science &amp; Engineering courses covering programming languages, modern web development, and data analysis.</li>
+                <li>Supervised and mentored senior students on software engineering capstones and academic research works.</li>
+                <li>Spearheaded the creation of digital learning resources, interactive lab curricula, and modernized course materials.</li>
+                <li>Served actively on departmental academic committees, curriculum reviews, and faculty boards.</li>
+              </ul>
+              <div class="card-tags">
+                <span>CSE Instruction</span>
+                <span>Student Research Mentorship</span>
+                <span>Web &amp; Data Analysis</span>
+                <span>Curriculum Design</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Role 3 -->
+          <article class="timeline-item reveal-left">
+            <div class="timeline-node" aria-hidden="true"><span></span></div>
+            <div class="timeline-card tilt-card spotlight-card">
+              <div class="timeline-meta">
+                <span class="timeline-date">2022</span>
+                <span class="timeline-badge">NATIONAL / GLOBAL EVENT</span>
+              </div>
+              <h3 class="timeline-role">Team Associate (Social Media &amp; Web Application)</h3>
+              <p class="timeline-org">International Collegiate Programming Contest (ICPC) 2022</p>
+              <ul class="timeline-list">
+                <li>Selected for the official organizing team under the <strong>Bangladesh Computer Council (BCC)</strong> and the <strong>Ministry of ICT Division</strong>.</li>
+                <li>Managed web application operations and digital social media communications for one of the world's premier algorithmic programming competitions.</li>
+              </ul>
+              <div class="card-tags">
+                <span>ICPC World Finals Ecosystem</span>
+                <span>BCC • ICT Division</span>
+                <span>Web Operations</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Role 4 -->
+          <article class="timeline-item reveal-right">
+            <div class="timeline-node" aria-hidden="true"><span></span></div>
+            <div class="timeline-card tilt-card spotlight-card">
+              <div class="timeline-meta">
+                <span class="timeline-date">2021 – 2022</span>
+                <span class="timeline-badge">ACADEMIA</span>
+              </div>
+              <h3 class="timeline-role">Teaching Assistant (TA)</h3>
+              <p class="timeline-org">Canadian University of Bangladesh (CUB)</p>
+              <ul class="timeline-list">
+                <li>Led small-group tutorials, evaluated programming assignments &amp; exams, and provided one-on-one debugging mentorship in CSE labs.</li>
+                <li>Collaborated with faculty members on research projects through Python/C++ programming, data analysis, and technical experimentation.</li>
+                <li>Co-developed syllabi, lab problem sets, and lesson plans while administering course portals, exam schedules, and academic records.</li>
+              </ul>
+              <div class="card-tags">
+                <span>CSE Labs</span>
+                <span>Faculty Research Support</span>
+                <span>C++ &amp; Python</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Role 5 -->
+          <article class="timeline-item reveal-left">
+            <div class="timeline-node" aria-hidden="true"><span></span></div>
+            <div class="timeline-card tilt-card spotlight-card">
+              <div class="timeline-meta">
+                <span class="timeline-date">2016 – 2019</span>
+                <span class="timeline-badge">INDUSTRY ENGINEERING</span>
+              </div>
+              <h3 class="timeline-role">Full Stack Developer</h3>
+              <p class="timeline-org">KP Software Solutions</p>
+              <ul class="timeline-list">
+                <li>Engineered responsive component-driven frontends with <strong>ReactJS</strong>, HTML5, CSS3, and JavaScript, managing state and client-side routing.</li>
+                <li>Architected <strong>NodeJS</strong> &amp; <strong>ExpressJS</strong> RESTful APIs backed by <strong>MongoDB</strong> schemas, authentication pipelines, and server-side validation.</li>
+                <li>Implemented automated test suites evaluating application performance, security posture, and horizontal scalability.</li>
+                <li>Configured and maintained production servers, databases, and deployment workflows in close collaboration with stakeholders and UI designers.</li>
+              </ul>
+              <div class="card-tags">
+                <span>ReactJS</span>
+                <span>NodeJS &amp; ExpressJS</span>
+                <span>MongoDB</span>
+                <span>REST APIs</span>
+                <span>Production DevOps</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== FEATURED AI & FULL-STACK PROJECTS ==================== -->
+    <section id="projects" class="section section-spy">
+      <div class="container">
+        <div class="section-header reveal-up">
+          <span class="section-eyebrow">04 // ARCHITECTED SOLUTIONS</span>
+          <h2 class="section-title">
+            Featured <span class="text-gradient scramble-on-view" data-value="Projects">Projects</span> &amp; Systems
+          </h2>
+          <p class="section-subtitle">
+            Selected AI agent orchestrators, full-stack web architectures, and deep learning pipelines — managed live via NEURAL.CMS.
+          </p>
+        </div>
+
+        <div id="projects-public-grid" class="projects-public-grid"></div>
+      </div>
+    </section>
+
+    <!-- ==================== NOTABLE CLIENTS, ACHIEVEMENTS & REFERENCES ==================== -->
+    <section id="clients" class="section section-spy">
+      <div class="container">
+        <!-- Notable Clients Showcase -->
+        <div class="section-header reveal-up">
+          <span class="section-eyebrow">05 // TRUSTED ORGANIZATIONS &amp; IMPACT</span>
+          <h2 class="section-title">
+            Notable <span class="text-gradient scramble-on-view" data-value="Clients">Clients</span> &amp; Community Impact
+          </h2>
+          <p class="section-subtitle">
+            Collaborations across national digital infrastructure authorities, enterprise technology leaders, and developer communities.
+          </p>
+        </div>
+
+        <div class="clients-grid reveal-up">
+          <div class="client-pod tilt-card" data-tilt-max="8">
+            <div class="client-logo-surface">
+              <img src="assets/client-bcc.png" alt="Bangladesh Computer Council (BCC)" loading="lazy" />
+            </div>
+            <div class="client-caption">
+              <strong>Bangladesh Computer Council</strong>
+              <span>ICT Division • Govt. of Bangladesh</span>
+            </div>
+          </div>
+
+          <div class="client-pod tilt-card" data-tilt-max="8">
+            <div class="client-logo-surface">
+              <img src="assets/client-bhtpa.png" alt="Bangladesh Hi-Tech Park Authority" loading="lazy" />
+            </div>
+            <div class="client-caption">
+              <strong>Bangladesh Hi-Tech Park Authority</strong>
+              <span>National Innovation Infrastructure</span>
+            </div>
+          </div>
+
+          <div class="client-pod tilt-card" data-tilt-max="8">
+            <div class="client-logo-surface">
+              <img src="assets/client-ssl.png" alt="SSL Wireless" loading="lazy" />
+            </div>
+            <div class="client-caption">
+              <strong>SSL Wireless</strong>
+              <span>Fintech &amp; Digital Communications</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements Strip -->
+        <div class="achievements-grid reveal-up" style="--delay: 0.1s">
+          <div class="ach-card spotlight-card">
+            <span class="ach-num">01</span>
+            <h4>End-to-End Web &amp; Mobile UI</h4>
+            <p>Conceptualized, designed, and deployed production web apps alongside device-specific user interfaces tailored for smartphones and tablets.</p>
+          </div>
+          <div class="ach-card spotlight-card">
+            <span class="ach-num">02</span>
+            <h4>Competitive Programming</h4>
+            <p>Active participant in algorithmic programming contests using C++ and Python, sharpening data-structure and problem-solving speed.</p>
+          </div>
+          <div class="ach-card spotlight-card">
+            <span class="ach-num">03</span>
+            <h4>Security &amp; Dev Community</h4>
+            <p>Recognized technical problem solver on <strong>Stack Overflow</strong> and <strong>Stack Exchange (Information Security)</strong>.</p>
+          </div>
+        </div>
+
+        <!-- Academic References -->
+        <div class="sub-heading reveal-up">
+          <span class="mono-accent">// VERIFIED ENDORSEMENTS</span>
+          <h3>Academic References</h3>
+        </div>
+
+        <div class="refs-grid">
+          <div class="ref-card spotlight-card reveal-up" style="--delay: 0.05s">
+            <div class="ref-avatar">MA</div>
+            <div class="ref-details">
+              <h4>Murshed Al Amin</h4>
+              <p>Lecturer, Department of CSE</p>
+              <p class="ref-uni">Canadian University of Bangladesh</p>
+              <button type="button" class="copy-chip" data-copy="tonar.tron@gmail.com" data-cursor="COPY">
+                <span>tonar.tron@gmail.com</span>
+                <small>COPY</small>
+              </button>
+            </div>
+          </div>
+
+          <div class="ref-card spotlight-card reveal-up" style="--delay: 0.12s">
+            <div class="ref-avatar">KA</div>
+            <div class="ref-details">
+              <h4>Md Kawsar Ahmed Asif</h4>
+              <p>Lecturer, Department of CSE</p>
+              <p class="ref-uni">Canadian University of Bangladesh</p>
+              <button type="button" class="copy-chip" data-copy="ahmedasif.math.du@gmail.com" data-cursor="COPY">
+                <span>ahmedasif.math.du@gmail.com</span>
+                <small>COPY</small>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== CONTACT COMMAND DECK ==================== -->
+    <section id="contact" class="section section-spy">
+      <div class="container">
+        <div class="section-header reveal-up">
+          <span class="section-eyebrow">06 // ESTABLISH UPLINK</span>
+          <h2 class="section-title">
+            Let's Build the <span class="text-gradient scramble-on-view" data-value="Future">Future</span> Together
+          </h2>
+          <p class="section-subtitle">
+            Open to AI engineering collaborations, LLM &amp; agentic consulting, full-stack product builds, and academic research initiatives.
+          </p>
+        </div>
+
+        <div class="contact-grid">
+          <!-- Direct Channels + Downloadable CV Vault -->
+          <div class="contact-info-panel spotlight-card reveal-left">
+            <h3>Direct Telemetry Channels</h3>
+            <p class="contact-lead">
+              Click any channel below to copy instantaneously or launch a direct transmission.
+            </p>
+
+            <div class="channel-list">
+              <div class="channel-item">
+                <div class="channel-icon">@</div>
+                <div class="channel-body">
+                  <span class="channel-label">PRIMARY EMAIL</span>
+                  <a id="channel-email-link" href="mailto:sojol.cub@gmail.com" class="channel-val">sojol.cub@gmail.com</a>
+                </div>
+                <button id="channel-email-copy" type="button" class="btn-copy magnetic" data-copy="sojol.cub@gmail.com" data-cursor="COPY">Copy</button>
+              </div>
+
+              <div class="channel-item">
+                <div class="channel-icon">☎</div>
+                <div class="channel-body">
+                  <span class="channel-label">DIRECT MOBILE (PRIMARY)</span>
+                  <a id="channel-phone1-link" href="tel:+8801701012207" class="channel-val">+880 1701 012207</a>
+                </div>
+                <button id="channel-phone1-copy" type="button" class="btn-copy magnetic" data-copy="+8801701012207" data-cursor="COPY">Copy</button>
+              </div>
+
+              <div class="channel-item">
+                <div class="channel-icon">✆</div>
+                <div class="channel-body">
+                  <span class="channel-label">SECONDARY MOBILE</span>
+                  <a id="channel-phone2-link" href="tel:+8801717704609" class="channel-val">+880 1717 704609</a>
+                </div>
+                <button id="channel-phone2-copy" type="button" class="btn-copy magnetic" data-copy="+8801717704609" data-cursor="COPY">Copy</button>
+              </div>
+
+              <div class="channel-item">
+                <div class="channel-icon">⌖</div>
+                <div class="channel-body">
+                  <span class="channel-label">BASE LOCATION</span>
+                  <span id="channel-location-val" class="channel-val">Nestor Living, 88/7, South Badda, Dhaka-1212, Bangladesh</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="cv-vault">
+              <div class="vault-text">
+                <span class="mono-accent">UPDATED 2026 EDITION</span>
+                <strong>Download Official Curriculum Vitae</strong>
+              </div>
+              <div class="vault-actions">
+                <a href="assets/Al_Amin_Mahfuz_CV_2026.pdf" download="Al Amin Mahfuz CV - Updated 2026.pdf" class="btn btn-sm btn-primary magnetic" data-cv-download="pdf-vault" data-cursor="PDF">
+                  PDF Version
+                </a>
+                <a href="assets/Al_Amin_Mahfuz_CV_2026.docx" download="Al Amin Mahfuz CV - Updated 2026.docx" class="btn btn-sm btn-outline magnetic" data-cv-download="docx-vault" data-cursor="DOCX">
+                  Word (DOCX)
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Transmission Composer -->
+          <form id="contact-form" class="contact-form-panel spotlight-card reveal-right">
+            <h3>Send Direct Transmission</h3>
+            <div class="form-row">
+              <label for="sender-name">Your Name</label>
+              <input type="text" id="sender-name" name="name" required placeholder="e.g., Dr. Sarah Rahman / Tech Lead" />
+            </div>
+            <div class="form-row">
+              <label for="sender-email">Your Email</label>
+              <input type="email" id="sender-email" name="email" required placeholder="you@organization.com" />
+            </div>
+            <div class="form-row">
+              <label for="sender-topic">Collaboration Vector</label>
+              <select id="sender-topic" name="topic">
+                <option value="AI Agent / LLM Integration Project">AI Agent / LLM Integration Project</option>
+                <option value="Full-Stack Web / Mobile Engineering">Full-Stack Web / Mobile Engineering</option>
+                <option value="Academic Research / CSE Speaking">Academic Research / CSE Speaking</option>
+                <option value="General Inquiry & Networking">General Inquiry &amp; Networking</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="sender-msg">Mission Brief</label>
+              <textarea id="sender-msg" name="message" rows="4" required placeholder="Tell me about your AI product, full-stack roadmap, or academic initiative..."></textarea>
+            </div>
+
+            <div class="form-footer">
+              <button type="submit" class="btn btn-primary magnetic" data-cursor="TRANSMIT">
+                <span>Launch Transmission</span>
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+
+              <div class="signature-box" title="Authentic Digital Signature — Al Amin Mahfuz">
+                <img src="assets/signature.png" alt="Al Amin Mahfuz Signature" class="sig-img" />
+                <span>Al Amin Mahfuz</span>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <strong id="footer-brand-name">AL AMIN MAHFUZ</strong>
+        <span id="footer-brand-headline">Senior Lecturer in CSE • Full Stack Developer • AI Expert</span>
+      </div>
+      <div class="footer-meta">
+        <span>Dhaka, Bangladesh</span>
+        <span class="dot-sep">•</span>
+        <a href="admin.html" class="back-top magnetic" data-cursor="ADMIN">Admin Login ⚙</a>
+        <span class="dot-sep">•</span>
+        <a href="#hero" class="back-top magnetic" data-cursor="TOP">Back to Zenith ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="cyber-toast" class="cyber-toast" role="status" aria-live="polite"></div>
+
+  <script src="cms-store.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
+

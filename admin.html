@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEURAL.CMS // Admin Command Deck — Al Amin Mahfuz</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <!-- Ambient Neural Canvas & Aurora -->
+  <canvas id="admin-canvas" aria-hidden="true"></canvas>
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="orb orb-cyan"></div>
+    <div class="orb orb-violet"></div>
+    <div class="grid-mesh"></div>
+  </div>
+
+  <!-- ==================== 1. HOLOGRAPHIC LOGIN GATE ==================== -->
+  <section id="login-view" class="login-view">
+    <div class="login-card" id="login-card">
+      <div class="login-scanner" aria-hidden="true">
+        <svg class="scanner-ring" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(0,240,255,0.45)" stroke-width="1.5" stroke-dasharray="12 8" />
+          <circle cx="60" cy="6" r="3.5" fill="#00f0ff" />
+        </svg>
+        <div class="scanner-core">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.9">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+      </div>
+
+      <div class="login-header">
+        <span class="mono-eyebrow">NEURAL.OS // SECURITY GATE</span>
+        <h1>Admin Command Login</h1>
+        <p>Authenticate to manage Al Amin Mahfuz's portfolio, live telemetry &amp; inbox.</p>
+      </div>
+
+      <div id="login-alert" class="login-alert" role="alert" hidden></div>
+
+      <form id="login-form" class="login-form" autocomplete="on">
+        <div class="field">
+          <label for="login-username">ADMIN USERNAME / EMAIL</label>
+          <div class="input-wrap">
+            <span class="input-icon">@</span>
+            <input
+              type="email"
+              id="login-username"
+              name="username"
+              required
+              placeholder="sojol.cub@gmail.com"
+              autocomplete="username"
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="login-password">ACCESS PASSKEY</label>
+          <div class="input-wrap">
+            <span class="input-icon">⌘</span>
+            <input
+              type="password"
+              id="login-password"
+              name="password"
+              required
+              placeholder="•••••••••"
+              autocomplete="current-password"
+            />
+            <button type="button" id="toggle-pass" class="eye-btn" aria-label="Show or hide password">
+              Show
+            </button>
+          </div>
+        </div>
+
+        <div class="login-options">
+          <label class="checkbox-row">
+            <input type="checkbox" id="login-remember" checked />
+            <span>Keep neural session active</span>
+          </label>
+          <span class="enc-tag">AES / TLS LOCAL VAULT</span>
+        </div>
+
+        <button type="submit" id="login-submit" class="btn btn-primary btn-block">
+          <span id="login-btn-text">Authenticate &amp; Unlock</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M5 12h14M13 5l7 7-7 7" />
+          </svg>
+        </button>
+      </form>
+
+      <div class="login-footer">
+        <a href="index.html" class="back-link">← Return to Public Portfolio</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. ADMIN COMMAND DASHBOARD ==================== -->
+  <div id="dashboard-view" class="dashboard-shell" hidden>
+    <!-- Sidebar -->
+    <aside id="admin-sidebar" class="admin-sidebar">
+      <div class="sidebar-brand">
+        <div class="admin-avatar-wrap">
+          <img src="assets/profile.png" alt="Al Amin Mahfuz" class="admin-avatar" />
+          <span class="online-dot"></span>
+        </div>
+        <div class="admin-id">
+          <strong>Al Amin Mahfuz</strong>
+          <span>SUPER ADMIN • RSTU</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Dashboard Sections">
+        <button type="button" class="side-link active" data-tab="overview">
+          <span class="side-ic">◈</span>
+          <span>Command Overview</span>
+        </button>
+        <button type="button" class="side-link" data-tab="profile">
+          <span class="side-ic">◎</span>
+          <span>Profile &amp; Hero</span>
+        </button>
+        <button type="button" class="side-link" data-tab="experience">
+          <span class="side-ic">⚡</span>
+          <span>Experience Timeline</span>
+          <span id="count-exp" class="side-pill">5</span>
+        </button>
+        <button type="button" class="side-link" data-tab="skills">
+          <span class="side-ic">❖</span>
+          <span>Skills &amp; AI Arsenal</span>
+          <span id="count-skills" class="side-pill">32</span>
+        </button>
+        <button type="button" class="side-link" data-tab="projects">
+          <span class="side-ic">🚀</span>
+          <span>Featured Projects</span>
+          <span id="count-projects" class="side-pill">3</span>
+        </button>
+        <button type="button" class="side-link" data-tab="inbox">
+          <span class="side-ic">✉</span>
+          <span>Transmissions Inbox</span>
+          <span id="count-unread" class="side-pill pill-alert">1</span>
+        </button>
+        <button type="button" class="side-link" data-tab="security">
+          <span class="side-ic">⚙</span>
+          <span>Security &amp; Backup</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="index.html" target="_blank" rel="noopener" class="btn btn-outline btn-sm btn-block">
+          <span>Open Public Website ↗</span>
+        </a>
+        <button type="button" id="logout-btn" class="btn btn-danger-ghost btn-sm btn-block">
+          <span>Lock &amp; Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <div class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button type="button" id="sidebar-toggle" class="icon-btn mobile-toggle" aria-label="Toggle Menu">☰</button>
+          <div>
+            <span class="mono-eyebrow">NEURAL.CMS // CONTROL MATRIX</span>
+            <h2 id="active-tab-title">Command Overview</h2>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="sync-indicator" title="Live synced with public portfolio">
+            <span class="sync-dot"></span>
+            <span id="sync-status-text">LIVE SYNC READY</span>
+          </div>
+          <div class="clock-chip" id="admin-clock">DAC --:--:--</div>
+          <button type="button" id="admin-theme-btn" class="icon-btn" title="Switch Dark / Light Theme">☀</button>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <!-- ==================== TAB 1: OVERVIEW ==================== -->
+        <section id="tab-overview" class="tab-panel active">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">PORTFOLIO VIEWS</span>
+                <span class="kpi-icon cyan">👁</span>
+              </div>
+              <div class="kpi-val" id="kpi-views">0</div>
+              <div class="kpi-foot">Live visitor telemetry counter</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">CV DOWNLOADS</span>
+                <span class="kpi-icon violet">⬇</span>
+              </div>
+              <div class="kpi-val" id="kpi-downloads">0</div>
+              <div class="kpi-foot">PDF &amp; Word 2026 editions</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">UNREAD MESSAGES</span>
+                <span class="kpi-icon emerald">✉</span>
+              </div>
+              <div class="kpi-val" id="kpi-unread">0</div>
+              <div class="kpi-foot">Direct contact uplink inbox</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">AI AGENT QUERIES</span>
+                <span class="kpi-icon amber">⚡</span>
+              </div>
+              <div class="kpi-val" id="kpi-ai-queries">0</div>
+              <div class="kpi-foot">MAHFUZ.AI MCP console runs</div>
+            </div>
+          </div>
+
+          <div class="overview-split">
+            <div class="glass-panel">
+              <div class="panel-head">
+                <div>
+                  <span class="mono-eyebrow">TELEMETRY PULSE</span>
+                  <h3>7-Cycle Engagement Trajectory</h3>
+                </div>
+                <span class="status-tag">ACTIVE</span>
+              </div>
+              <div class="chart-box" id="telemetry-chart"></div>
+            </div>
+
+            <div class="glass-panel">
+              <div class="panel-head">
+                <div>
+                  <span class="mono-eyebrow">MCP AGENT LOGS</span>
+                  <h3>Recent Visitor AI Queries</h3>
+                </div>
+                <button type="button" id="clear-ai-logs" class="btn-mini">Clear</button>
+              </div>
+              <div id="ai-query-list" class="log-list"></div>
+            </div>
+          </div>
+
+          <div class="glass-panel">
+            <div class="panel-head">
+              <div>
+                <span class="mono-eyebrow">QUICK DISPATCH</span>
+                <h3>Latest Direct Transmissions</h3>
+              </div>
+              <button type="button" class="btn-mini" data-goto-tab="inbox">View All Inbox →</button>
+            </div>
+            <div id="overview-inbox-preview" class="inbox-preview-list"></div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 2: PROFILE & HERO EDITOR ==================== -->
+        <section id="tab-profile" class="tab-panel">
+          <form id="profile-form" class="glass-panel form-panel">
+            <div class="panel-head">
+              <div>
+                <span class="mono-eyebrow">IDENTITY &amp; HERO TELEMETRY</span>
+                <h3>Edit Public Profile &amp; Hero Section</h3>
+              </div>
+              <button type="submit" class="btn btn-primary btn-sm">Save &amp; Sync Live</button>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="field">
+                <label for="pf-first">FIRST NAME</label>
+                <input type="text" id="pf-first" required />
+              </div>
+              <div class="field">
+                <label for="pf-last">LAST NAME (GRADIENT ACCENT)</label>
+                <input type="text" id="pf-last" required />
+              </div>
+
+              <div class="field span-2">
+                <label for="pf-headline">FOOTER / META HEADLINE</label>
+                <input type="text" id="pf-headline" required />
+              </div>
+
+              <div class="field">
+                <label for="pf-avail-text">AVAILABILITY STATUS BANNER</label>
+                <input type="text" id="pf-avail-text" required />
+              </div>
+              <div class="field">
+                <label for="pf-avail-toggle">AVAILABILITY BEACON STATE</label>
+                <select id="pf-avail-toggle">
+                  <option value="true">🟢 Active / Available for Collaboration</option>
+                  <option value="false">🟠 Busy / Selective Availability</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="pf-badge-title">PORTRAIT FLOATING BADGE TITLE</label>
+                <input type="text" id="pf-badge-title" placeholder="Senior Lecturer" />
+              </div>
+              <div class="field">
+                <label for="pf-badge-sub">PORTRAIT FLOATING BADGE SUBTITLE</label>
+                <input type="text" id="pf-badge-sub" placeholder="RSTU, Natore" />
+              </div>
+
+              <div class="field span-2">
+                <label for="pf-bio">HERO BIOGRAPHY (HTML TAGS LIKE &lt;strong&gt; &amp; &lt;span&gt; SUPPORTED)</label>
+                <textarea id="pf-bio" rows="4" required></textarea>
+              </div>
+
+              <div class="field">
+                <label for="pf-email">PRIMARY EMAIL</label>
+                <input type="email" id="pf-email" required />
+              </div>
+              <div class="field">
+                <label for="pf-location">BASE LOCATION</label>
+                <input type="text" id="pf-location" required />
+              </div>
+
+              <div class="field">
+                <label for="pf-phone1">PRIMARY MOBILE</label>
+                <input type="text" id="pf-phone1" required />
+              </div>
+              <div class="field">
+                <label for="pf-phone2">SECONDARY MOBILE</label>
+                <input type="text" id="pf-phone2" />
+              </div>
+            </div>
+
+            <div class="divider-title">HERO COUNTER METRICS &amp; TYPEWRITER ROLES</div>
+
+            <div class="form-grid-4">
+              <div class="field">
+                <label for="pf-m-exp">YEARS EXPERIENCE</label>
+                <input type="number" id="pf-m-exp" min="1" max="50" required />
+              </div>
+              <div class="field">
+                <label for="pf-m-llm">FRONTIER LLM APIS</label>
+                <input type="number" id="pf-m-llm" min="1" max="20" required />
+              </div>
+              <div class="field">
+                <label for="pf-m-tech">TOTAL TECHNOLOGIES</label>
+                <input type="number" id="pf-m-tech" min="1" max="200" required />
+              </div>
+              <div class="field">
+                <label for="pf-m-stu">STUDENTS MENTORED</label>
+                <input type="number" id="pf-m-stu" min="1" max="50000" required />
+              </div>
+            </div>
+
+            <div class="field" style="margin-top: 1rem;">
+              <label for="pf-roles">TYPEWRITER CYCLING ROLES (ONE ROLE PER LINE)</label>
+              <textarea id="pf-roles" rows="5" required></textarea>
+            </div>
+
+            <div class="form-actions-end">
+              <button type="submit" class="btn btn-primary">Save Profile &amp; Broadcast to Website</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ==================== TAB 3: EXPERIENCE TIMELINE ==================== -->
+        <section id="tab-experience" class="tab-panel">
+          <div class="glass-panel">
+            <div class="panel-head">
+              <div>
+                <span class="mono-eyebrow">CAREER TRAJECTORY CRUD</span>
+                <h3>Manage Experience Timeline</h3>
+              </div>
+              <button type="button" id="add-exp-btn" class="btn btn-primary btn-sm">+ Add New Role</button>
+            </div>
+            <div id="exp-manager-list" class="crud-stack"></div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 4: SKILLS & AI ARSENAL ==================== -->
+        <section id="tab-skills" class="tab-panel">
+          <div class="glass-panel">
+            <div class="panel-head">
+              <div>
+                <span class="mono-eyebrow">CAPABILITY MATRIX CRUD</span>
+                <h3>Manage Technical &amp; AI Skills</h3>
+              </div>
+              <button type="button" id="add-skill-btn" class="btn btn-primary btn-sm">+ Add New Skill</button>
+            </div>
+
+            <div class="admin-filter-bar" id="admin-skill-filters">
+              <button type="button" class="chip-btn active" data-cat="all">All</button>
+              <button type="button" class="chip-btn" data-cat="ai">AI, LLMs &amp; IDEs</button>
+              <button type="button" class="chip-btn" data-cat="frontend">Frontend &amp; Mobile</button>
+              <button type="button" class="chip-btn" data-cat="backend">Backend &amp; Languages</button>
+              <button type="button" class="chip-btn" data-cat="database">Databases</button>
+              <button type="button" class="chip-btn" data-cat="foundations">Math, OS &amp; Creative</button>
+            </div>
+
+            <div id="skills-manager-grid" class="skills-admin-grid"></div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 5: FEATURED PROJECTS ==================== -->
+        <section id="tab-projects" class="tab-panel">
+          <div class="glass-panel">
+            <div class="panel-head">
+              <div>
+                <span class="mono-eyebrow">PORTFOLIO SHOWCASE BUILDER</span>
+                <h3>Featured AI &amp; Full-Stack Projects</h3>
+              </div>
+              <div class="head-controls">
+                <label class="switch-row">
+                  <input type="checkbox" id="toggle-projects-sec" checked />
+                  <span>Display Section on Website</span>
+                </label>
+                <button type="button" id="add-project-btn" class="btn btn-primary btn-sm">+ Add Project</button>
+              </div>
+            </div>
+            <div id="projects-manager-grid" class="projects-admin-grid"></div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 6: TRANSMISSIONS INBOX ==================== -->
+        <section id="tab-inbox" class="tab-panel">
+          <div class="glass-panel">
+            <div class="panel-head">
+              <div>
+                <span class="mono-eyebrow">DIRECT CONTACT UPLINK</span>
+                <h3>Visitor Transmissions Inbox</h3>
+              </div>
+              <div class="head-controls">
+                <button type="button" id="mark-all-read" class="btn btn-outline btn-sm">Mark All Read</button>
+              </div>
+            </div>
+            <div id="inbox-full-list" class="inbox-stack"></div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 7: SECURITY & BACKUP ==================== -->
+        <section id="tab-security" class="tab-panel">
+          <div class="overview-split">
+            <form id="creds-form" class="glass-panel form-panel">
+              <div class="panel-head">
+                <div>
+                  <span class="mono-eyebrow">ACCESS CONTROL</span>
+                  <h3>Admin Login Credentials</h3>
+                </div>
+              </div>
+              <div class="field">
+                <label for="sec-user">ADMIN LOGIN EMAIL / USERNAME</label>
+                <input type="email" id="sec-user" required />
+              </div>
+              <div class="field" style="margin-top: 0.9rem;">
+                <label for="sec-pass">NEW ADMIN PASSWORD</label>
+                <input type="password" id="sec-pass" required minlength="4" placeholder="Enter new passkey to update..." />
+              </div>
+              <div class="form-actions-end" style="margin-top: 1.2rem; justify-content: space-between;">
+                <button type="button" id="reset-creds-btn" class="btn btn-outline btn-sm">Restore Default Passkey</button>
+                <button type="submit" class="btn btn-primary btn-sm">Update Credentials</button>
+              </div>
+            </form>
+
+            <div class="glass-panel">
+              <div class="panel-head">
+                <div>
+                  <span class="mono-eyebrow">SYSTEM VAULT</span>
+                  <h3>Backup, Import &amp; Factory Reset</h3>
+                </div>
+              </div>
+              <p class="muted-copy">
+                Export your entire portfolio configuration, timeline, skills, projects, and inbox messages as a portable JSON snapshot, or restore factory defaults.
+              </p>
+              <div class="vault-btn-stack">
+                <button type="button" id="export-json-btn" class="btn btn-outline btn-block">⬇ Export Portfolio Snapshot (.json)</button>
+                <label class="btn btn-outline btn-block file-label">
+                  <span>⬆ Import Snapshot (.json)</span>
+                  <input type="file" id="import-json-input" accept=".json,application/json" hidden />
+                </label>
+                <button type="button" id="factory-reset-btn" class="btn btn-danger-ghost btn-block">↺ Reset Content to Updated 2026 CV Defaults</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== UNIVERSAL MODAL EDITOR ==================== -->
+  <div id="cms-modal" class="cms-modal" hidden>
+    <div class="cms-modal-backdrop" id="modal-backdrop"></div>
+    <div class="cms-modal-dialog">
+      <div class="panel-head">
+        <h3 id="modal-title">Edit Item</h3>
+        <button type="button" id="modal-close" class="icon-btn">✕</button>
+      </div>
+      <form id="modal-form" class="modal-body"></form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
+
+  <script src="cms-store.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
+
