@@ -773,7 +773,7 @@
       hire: {
         tool: 'mcp.cv.get_contact_channels()',
         answer:
-          "Ready to collaborate! Reach Al Amin directly at sojol.cub@gmail.com or +880 1701 012207 / +880 1717 704609 (South Badda, Dhaka-1212). You can also download his updated 2026 CV in PDF or Word (DOCX) right from the navigation bar or Contact Command Deck below."
+          "Ready to collaborate! Reach Al Amin directly at sojol.cub@gmail.com or +880 1701 012207 / +880 1717 704609 (South Badda, Dhaka-1212), or send an instant message via the Direct Transmission form in the Contact Command Deck below."
       }
     };
 
@@ -1046,16 +1046,6 @@
         } catch {
           showToast(`CHANNEL: ${text}`);
         }
-      });
-    });
-
-    // Track CV downloads in Admin Telemetry
-    document.querySelectorAll("[data-cv-download]").forEach((link) => {
-      link.addEventListener("click", () => {
-        if (CMS) {
-          try { CMS.recordCvDownload(); } catch { /* ignore */ }
-        }
-        showToast("DOWNLOADING UPDATED 2026 CV...");
       });
     });
 

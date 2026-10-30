@@ -23,4 +23,4 @@ Futuristic, animation-rich personal portfolio website and live **NEURAL.CMS Admi
 - `admin.html`, `admin.css`, `admin.js` — Holographic Security Gate + 7-module Admin Command Deck (Telemetry Chart, Profile/Hero, Experience CRUD, Skills CRUD, Projects CRUD, Visitor Inbox, and JSON Vault).
 - `cms-store.js` — Shared `NeuralCMS` store with salted SHA-256 authentication, `localStorage` + `/api/cms` persistence, and real-time `BroadcastChannel` sync.
 - `server.mjs` — Zero-dependency Node.js static + `/api/cms` server.
-- `assets/` — Portrait photo, institutional client logos, signature, and downloadable **2026 CV** (`PDF` & `DOCX`).
+- `assets/` — Portrait photo, institutional client logos (BCC, Bangladesh Hi-Tech Park Authority, SSL Wireless), and digital signature.

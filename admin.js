@@ -487,7 +487,7 @@
     };
 
     setTxt("#kpi-views", analytics.pageViews ?? 0);
-    setTxt("#kpi-downloads", analytics.cvDownloads ?? 0);
+    setTxt("#kpi-skills", (cmsData.skills || []).length);
     setTxt("#kpi-unread", unread);
     setTxt("#kpi-ai-queries", aiQueries.length);
 

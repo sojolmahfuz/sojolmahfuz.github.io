@@ -277,7 +277,6 @@
 
     analytics: {
       pageViews: 128,
-      cvDownloads: 19,
       dailyViews: [14, 19, 17, 24, 21, 29, 32],
       aiQueries: [
         { q: "What AI & MCP systems do you build?", model: "Claude", at: new Date().toISOString() },
@@ -438,12 +437,6 @@
     saveData(data, true);
   }
 
-  function recordCvDownload() {
-    const data = loadData();
-    data.analytics.cvDownloads = (data.analytics.cvDownloads || 0) + 1;
-    saveData(data);
-  }
-
   function recordAiQuery(question, model) {
     const data = loadData();
     if (!Array.isArray(data.analytics.aiQueries)) data.analytics.aiQueries = [];
@@ -502,7 +495,6 @@
     updateAdminCredentials,
     resetAdminCredentials,
     recordPageView,
-    recordCvDownload,
     recordAiQuery,
     addMessage,
     onSync
