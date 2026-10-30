@@ -230,6 +230,34 @@
       { id: "sk-32", name: "Photoshop & Illustrator", cat: "foundations", tag: "Creative", note: "2D graphics, motion basics & visual assets", lvl: 84 }
     ],
 
+    publicationsSectionEnabled: true,
+    publications: [
+      {
+        id: "pub-ijsrp-2024",
+        title: "Enterprise Cyber Security Management Using Scapy and Kali Linux",
+        journal: "International Journal of Scientific and Research Publications (IJSRP)",
+        volumeIssue: "Volume 14, Issue 6, pp. 172–181",
+        date: "June 2024",
+        issn: "2250-3153",
+        doi: "10.29322/IJSRP.14.06.2024.p15015",
+        doiUrl: "https://doi.org/10.29322/IJSRP.14.06.2024.p15015",
+        pdfUrl: "https://www.ijsrp.org/research-paper-0624/ijsrp-p15015.pdf",
+        authors: "Dewan Juel Rahman, Al Amin Mahfuz, Most. Mithyla Zaman",
+        affiliation: "Department of Computer Science and Engineering, Rajshahi Science and Technology University (RSTU), Natore, Bangladesh",
+        abstract:
+          "Proposes an enterprise and academic network security management framework built with Python, Scapy interactive packet manipulation, and Kali Linux penetration testing. Evaluates organizational network defenses against ARP spoofing, packet sniffing, and DNS spoofing while enabling group-based internet security monitoring across corporate workstations and university laboratories (supported by the DASPiB cybersecurity initiative).",
+        keywords: [
+          "Internet Security",
+          "Kali Linux",
+          "Scapy",
+          "Python Network Security",
+          "Packet Sniffing",
+          "ARP & DNS Spoofing Defense",
+          "Internet Security Monitoring"
+        ]
+      }
+    ],
+
     projectsSectionEnabled: true,
     projects: [
       {
@@ -325,8 +353,12 @@
       if (res.ok) {
         const remote = await res.json();
         if (remote && remote.profile) {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(remote));
-          return remote;
+          const merged = Object.assign(clone(DEFAULT_CMS_DATA), remote, {
+            profile: Object.assign(clone(DEFAULT_CMS_DATA.profile), remote.profile || {}),
+            analytics: Object.assign(clone(DEFAULT_CMS_DATA.analytics), remote.analytics || {})
+          });
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+          return merged;
         }
       }
     } catch {

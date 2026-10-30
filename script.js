@@ -699,6 +699,77 @@
       bindInteractiveCards(timeline);
     }
 
+    // Research & Journal Publications Showcase
+    const pubSec = document.getElementById("publications");
+    const navPubLi = document.getElementById("nav-publications-li");
+    const pubList = document.getElementById("publications-public-list");
+    const showPubs = data.publicationsSectionEnabled !== false && Array.isArray(data.publications) && data.publications.length > 0;
+
+    if (pubSec) pubSec.hidden = !showPubs;
+    if (navPubLi) navPubLi.hidden = !showPubs;
+
+    if (pubList && showPubs) {
+      pubList.innerHTML = data.publications.map((pub) => {
+        const safeAuthors = escapeHtml(pub.authors || "").replace(
+          /Al Amin Mahfuz/gi,
+          '<mark class="author-self">Al Amin Mahfuz</mark>'
+        );
+        const kwHtml = (pub.keywords || []).map((k) => `<span>${escapeHtml(k)}</span>`).join("");
+        const citationText = `${pub.authors || "Al Amin Mahfuz"}, "${pub.title}," ${pub.journal}${pub.volumeIssue ? ", " + pub.volumeIssue : ""}${pub.date ? ", " + pub.date : ""}${pub.doi ? ", doi: " + pub.doi : ""}.`;
+        const doiBtn = pub.doiUrl
+          ? `<a href="${escapeHtml(pub.doiUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary magnetic" data-cursor="DOI"><span>Verify DOI Record ↗</span></a>`
+          : "";
+        const pdfBtn = pub.pdfUrl
+          ? `<a href="${escapeHtml(pub.pdfUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline magnetic" data-cursor="PAPER"><span>Read Full Paper (PDF) ↗</span></a>`
+          : "";
+
+        return `
+          <article class="bento-card pub-card tilt-card spotlight-card reveal-up in-view" data-tilt-max="4">
+            <div class="card-glow"></div>
+            <div class="pub-meta-bar">
+              <span class="pub-type-pill">PEER-REVIEWED INTERNATIONAL JOURNAL</span>
+              <div class="pub-identifiers">
+                ${pub.date ? `<span class="pub-id-chip">${escapeHtml(pub.date.toUpperCase())}</span>` : ""}
+                ${pub.issn ? `<span class="pub-id-chip">ISSN: ${escapeHtml(pub.issn)}</span>` : ""}
+                ${pub.doi ? `<span class="pub-id-chip pub-doi-chip">DOI: ${escapeHtml(pub.doi)}</span>` : ""}
+              </div>
+            </div>
+            <h3 class="pub-title">${escapeHtml(pub.title)}</h3>
+            <div class="pub-venue">
+              <span class="pub-journal-name">${escapeHtml(pub.journal)}</span>
+              ${pub.volumeIssue ? `<span class="dot-sep">•</span><span class="pub-vol">${escapeHtml(pub.volumeIssue)}</span>` : ""}
+            </div>
+            <p class="pub-authors">
+              <strong>Authors:</strong> ${safeAuthors}
+              ${pub.affiliation ? `<span class="pub-affil">${escapeHtml(pub.affiliation)}</span>` : ""}
+            </p>
+            <p class="pub-abstract">${escapeHtml(pub.abstract)}</p>
+            <div class="card-tags">${kwHtml}</div>
+            <div class="pub-actions">
+              ${doiBtn}
+              ${pdfBtn}
+              <button type="button" class="project-link-btn pub-cite-btn" data-copy="${escapeHtml(citationText)}" data-cursor="CITE">
+                Copy IEEE Citation ⌘
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      bindInteractiveCards(pubList);
+      pubList.querySelectorAll(".pub-cite-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const text = btn.getAttribute("data-copy") || "";
+          try {
+            await navigator.clipboard.writeText(text);
+            showToast("COPIED ACADEMIC CITATION TO CLIPBOARD!");
+          } catch {
+            showToast("CITATION READY");
+          }
+        });
+      });
+    }
+
     // Featured Projects Showcase
     const projSec = document.getElementById("projects");
     const navProjLi = document.getElementById("nav-projects-li");
@@ -776,6 +847,11 @@
         answer:
           "Al Amin Mahfuz currently serves as Senior Lecturer in the Department of CSE at Rajshahi Science and Technology University (RSTU), Natore (2026–Present). Previously, he served at Canadian University of Bangladesh (CUB) as Lecturer in CSE (2022–2026) and Teaching Assistant (2021–2022). He teaches programming languages, software engineering, web technologies & AI fundamentals, designs modern curricula, and supervises undergraduate research & capstone projects."
       },
+      publication: {
+        tool: 'mcp.cv.get_publications({ doi: "10.29322/IJSRP.14.06.2024.p15015" })',
+        answer:
+          'Al Amin Mahfuz co-authored the peer-reviewed international journal paper "Enterprise Cyber Security Management Using Scapy and Kali Linux" published in the International Journal of Scientific and Research Publications (IJSRP), Vol. 14, Issue 6, pp. 172–181, June 2024 (ISSN 2250-3153, DOI: 10.29322/IJSRP.14.06.2024.p15015). Co-authored with Dewan Juel Rahman and Most. Mithyla Zaman at RSTU, Natore, the research engineers Python, Scapy, and Kali Linux mechanisms for ARP/DNS spoofing defense, packet sniffing diagnostics, and enterprise/university lab security monitoring.'
+      },
       clients: {
         tool: 'mcp.cv.get_notable_clients_and_events()',
         answer:
@@ -790,6 +866,9 @@
 
     function matchQuestion(q) {
       const s = q.toLowerCase();
+      if (s.includes("journal") || s.includes("paper") || s.includes("publish") || s.includes("publicat") || s.includes("ijsrp") || s.includes("scapy") || s.includes("kali") || s.includes("cyber") || s.includes("doi") || s.includes("research")) {
+        return KNOWLEDGE.publication;
+      }
       if (s.includes("teach") || s.includes("lectur") || s.includes("senior") || s.includes("rstu") || s.includes("rajshahi") || s.includes("natore") || s.includes("cub") || s.includes("universit") || s.includes("academ")) {
         return KNOWLEDGE.teaching;
       }

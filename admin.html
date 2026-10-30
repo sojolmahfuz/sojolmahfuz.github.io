@@ -134,6 +134,11 @@
           <span>Skills &amp; AI Arsenal</span>
           <span id="count-skills" class="side-pill">32</span>
         </button>
+        <button type="button" class="side-link" data-tab="publications">
+          <span class="side-ic">📄</span>
+          <span>Journal Publications</span>
+          <span id="count-pubs" class="side-pill">1</span>
+        </button>
         <button type="button" class="side-link" data-tab="projects">
           <span class="side-ic">🚀</span>
           <span>Featured Projects</span>
@@ -409,7 +414,27 @@
           </div>
         </section>
 
-        <!-- ==================== TAB 5: FEATURED PROJECTS ==================== -->
+        <!-- ==================== TAB 5: JOURNAL PUBLICATIONS ==================== -->
+        <section id="tab-publications" class="tab-panel">
+          <div class="glass-panel">
+            <div class="panel-head">
+              <div>
+                <span class="mono-eyebrow">ACADEMIC RESEARCH &amp; JOURNALS</span>
+                <h3>Peer-Reviewed Journal &amp; Conference Publications</h3>
+              </div>
+              <div class="head-controls">
+                <label class="switch-row">
+                  <input type="checkbox" id="toggle-pubs-sec" checked />
+                  <span>Display Section on Website</span>
+                </label>
+                <button type="button" id="add-pub-btn" class="btn btn-primary btn-sm">+ Add Publication</button>
+              </div>
+            </div>
+            <div id="pubs-manager-list" class="crud-stack"></div>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 6: FEATURED PROJECTS ==================== -->
         <section id="tab-projects" class="tab-panel">
           <div class="glass-panel">
             <div class="panel-head">

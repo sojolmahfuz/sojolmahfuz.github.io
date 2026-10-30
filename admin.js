@@ -23,6 +23,7 @@
     profile: "Profile & Hero Telemetry",
     experience: "Experience Timeline CRUD",
     skills: "Skills & AI Arsenal Matrix",
+    publications: "Journal Publications CRUD",
     projects: "Featured Projects Showcase",
     inbox: "Visitor Transmissions Inbox",
     security: "Security & Vault Backup"
@@ -494,6 +495,7 @@
     // Sidebar badges
     setTxt("#count-exp", (cmsData.experiences || []).length);
     setTxt("#count-skills", (cmsData.skills || []).length);
+    setTxt("#count-pubs", (cmsData.publications || []).length);
     setTxt("#count-projects", (cmsData.projects || []).length);
     const unreadBadge = $("#count-unread");
     if (unreadBadge) {
@@ -897,7 +899,168 @@
     });
   }
 
-  /* -------------------- 10. FEATURED PROJECTS CRUD -------------------- */
+  /* -------------------- 10. JOURNAL PUBLICATIONS CRUD -------------------- */
+  function openPublicationModal(existingPub = null) {
+    const isEdit = Boolean(existingPub);
+    const pub = existingPub || {
+      title: "",
+      journal: "",
+      volumeIssue: "",
+      date: "June 2024",
+      issn: "",
+      doi: "",
+      doiUrl: "",
+      pdfUrl: "",
+      authors: "Al Amin Mahfuz",
+      affiliation: "Department of Computer Science and Engineering, Rajshahi Science and Technology University (RSTU), Natore, Bangladesh",
+      abstract: "",
+      keywords: []
+    };
+
+    openModal(
+      isEdit ? "Edit Journal Publication" : "Add Journal / Conference Publication",
+      `
+        <div class="field">
+          <label>PAPER TITLE</label>
+          <input type="text" name="title" value="${esc(pub.title)}" placeholder="e.g., Enterprise Cyber Security Management Using Scapy and Kali Linux" required />
+        </div>
+        <div class="form-grid-2">
+          <div class="field">
+            <label>JOURNAL / CONFERENCE VENUE</label>
+            <input type="text" name="journal" value="${esc(pub.journal)}" placeholder="e.g., IJSRP / IEEE Access" required />
+          </div>
+          <div class="field">
+            <label>VOLUME, ISSUE &amp; PAGES</label>
+            <input type="text" name="volumeIssue" value="${esc(pub.volumeIssue || "")}" placeholder="e.g., Volume 14, Issue 6, pp. 172–181" />
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field">
+            <label>PUBLICATION DATE</label>
+            <input type="text" name="date" value="${esc(pub.date || "")}" placeholder="e.g., June 2024" required />
+          </div>
+          <div class="field">
+            <label>ISSN / ISBN (OPTIONAL)</label>
+            <input type="text" name="issn" value="${esc(pub.issn || "")}" placeholder="e.g., 2250-3153" />
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="field">
+            <label>DOI IDENTIFIER</label>
+            <input type="text" name="doi" value="${esc(pub.doi || "")}" placeholder="e.g., 10.29322/IJSRP.14.06.2024.p15015" />
+          </div>
+          <div class="field">
+            <label>DOI VERIFICATION URL</label>
+            <input type="url" name="doiUrl" value="${esc(pub.doiUrl || "")}" placeholder="https://doi.org/..." />
+          </div>
+        </div>
+        <div class="field">
+          <label>FULL PAPER PDF URL (OPTIONAL)</label>
+          <input type="url" name="pdfUrl" value="${esc(pub.pdfUrl || "")}" placeholder="https://..." />
+        </div>
+        <div class="field">
+          <label>CO-AUTHORS</label>
+          <input type="text" name="authors" value="${esc(pub.authors || "")}" placeholder="Dewan Juel Rahman, Al Amin Mahfuz, Most. Mithyla Zaman" required />
+        </div>
+        <div class="field">
+          <label>INSTITUTIONAL AFFILIATION</label>
+          <input type="text" name="affiliation" value="${esc(pub.affiliation || "")}" />
+        </div>
+        <div class="field">
+          <label>ABSTRACT / RESEARCH SUMMARY</label>
+          <textarea name="abstract" rows="3" required>${esc(pub.abstract || "")}</textarea>
+        </div>
+        <div class="field">
+          <label>KEYWORDS (COMMA SEPARATED)</label>
+          <input type="text" name="keywords" value="${esc((pub.keywords || []).join(", "))}" placeholder="Internet Security, Kali Linux, Scapy" />
+        </div>
+      `,
+      (fd) => {
+        const nextPub = {
+          id: isEdit ? pub.id : "pub-" + Date.now(),
+          title: String(fd.get("title") || "").trim(),
+          journal: String(fd.get("journal") || "").trim(),
+          volumeIssue: String(fd.get("volumeIssue") || "").trim(),
+          date: String(fd.get("date") || "").trim(),
+          issn: String(fd.get("issn") || "").trim(),
+          doi: String(fd.get("doi") || "").trim(),
+          doiUrl: String(fd.get("doiUrl") || "").trim(),
+          pdfUrl: String(fd.get("pdfUrl") || "").trim(),
+          authors: String(fd.get("authors") || "").trim(),
+          affiliation: String(fd.get("affiliation") || "").trim(),
+          abstract: String(fd.get("abstract") || "").trim(),
+          keywords: String(fd.get("keywords") || "")
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        };
+
+        if (!Array.isArray(cmsData.publications)) cmsData.publications = [];
+        if (isEdit) {
+          const idx = cmsData.publications.findIndex((x) => x.id === pub.id);
+          if (idx >= 0) cmsData.publications[idx] = nextPub;
+        } else {
+          cmsData.publications.unshift(nextPub);
+        }
+
+        closeModal();
+        persistAndRefresh(isEdit ? "Journal publication updated!" : "New publication added to website!");
+      }
+    );
+  }
+
+  function renderPublications() {
+    const toggleSec = $("#toggle-pubs-sec");
+    if (toggleSec) toggleSec.checked = cmsData.publicationsSectionEnabled !== false;
+
+    const listEl = $("#pubs-manager-list");
+    if (!listEl) return;
+
+    const list = Array.isArray(cmsData.publications) ? cmsData.publications : [];
+    if (list.length === 0) {
+      listEl.innerHTML = `<div class="log-row">No publications added yet. Click "+ Add Publication" above.</div>`;
+      return;
+    }
+
+    listEl.innerHTML = list.map((pub) => `
+      <div class="crud-item">
+        <div class="crud-item-main">
+          <div>
+            <span class="crud-period">${esc(pub.date)}</span>
+            ${pub.doi ? `<span class="status-tag">DOI: ${esc(pub.doi)}</span>` : ""}
+          </div>
+          <h4 style="margin-top:0.35rem;">${esc(pub.title)}</h4>
+          <div class="crud-org">${esc(pub.journal)} ${pub.volumeIssue ? `• ${esc(pub.volumeIssue)}` : ""}</div>
+          <div style="font-size:0.83rem;color:var(--text-sub);">
+            Authors: ${esc(pub.authors)}
+          </div>
+        </div>
+        <div class="crud-actions">
+          <button type="button" class="btn-mini" data-pub-edit="${esc(pub.id)}">Edit</button>
+          <button type="button" class="btn-mini danger" data-pub-del="${esc(pub.id)}">Delete</button>
+        </div>
+      </div>
+    `).join("");
+
+    listEl.querySelectorAll("[data-pub-edit]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const pub = cmsData.publications.find((x) => x.id === btn.dataset.pubEdit);
+        if (pub) openPublicationModal(pub);
+      });
+    });
+
+    listEl.querySelectorAll("[data-pub-del]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const pub = cmsData.publications.find((x) => x.id === btn.dataset.pubDel);
+        if (!pub) return;
+        if (!window.confirm(`Delete publication "${pub.title}"?`)) return;
+        cmsData.publications = cmsData.publications.filter((x) => x.id !== pub.id);
+        persistAndRefresh("Publication removed.");
+      });
+    });
+  }
+
+  /* -------------------- 10B. FEATURED PROJECTS CRUD -------------------- */
   function openProjectModal(existingProj = null) {
     const isEdit = Boolean(existingProj);
     const pr = existingProj || {
@@ -1162,7 +1325,17 @@
   function initCrudToolbars() {
     $("#add-exp-btn")?.addEventListener("click", () => openExperienceModal(null));
     $("#add-skill-btn")?.addEventListener("click", () => openSkillModal(null));
+    $("#add-pub-btn")?.addEventListener("click", () => openPublicationModal(null));
     $("#add-project-btn")?.addEventListener("click", () => openProjectModal(null));
+
+    $("#toggle-pubs-sec")?.addEventListener("change", (e) => {
+      cmsData.publicationsSectionEnabled = e.target.checked;
+      persistAndRefresh(
+        cmsData.publicationsSectionEnabled
+          ? "Journal Publications section enabled on website!"
+          : "Journal Publications section hidden on website."
+      );
+    });
 
     $("#toggle-projects-sec")?.addEventListener("change", (e) => {
       cmsData.projectsSectionEnabled = e.target.checked;
@@ -1200,6 +1373,7 @@
     renderOverview();
     renderExperiences();
     renderSkills();
+    renderPublications();
     renderProjects();
     renderInbox();
   }

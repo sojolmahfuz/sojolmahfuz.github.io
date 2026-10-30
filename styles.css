@@ -2186,6 +2186,137 @@ html[data-theme="light"] .sig-img {
   }
 }
 
+/* ==================== JOURNAL PUBLICATIONS SHOWCASE ==================== */
+.publications-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pub-card {
+  padding: 2.15rem 2.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  border-color: var(--border-bright);
+}
+
+.pub-meta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.pub-type-pill {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.28rem 0.78rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: var(--emerald);
+}
+
+.pub-identifiers {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.48rem;
+}
+
+.pub-id-chip {
+  font-family: var(--font-mono);
+  font-size: 0.69rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(124, 92, 255, 0.12);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.pub-doi-chip {
+  color: var(--cyan);
+  border-color: rgba(0, 240, 255, 0.32);
+  background: rgba(0, 240, 255, 0.08);
+}
+
+.pub-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.32rem, 2.2vw, 1.68rem);
+  font-weight: 700;
+  line-height: 1.28;
+  color: var(--text-primary);
+}
+
+.pub-venue {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  font-size: 0.95rem;
+}
+
+.pub-journal-name {
+  font-weight: 700;
+  color: var(--violet-soft);
+}
+
+.pub-vol {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--cyan);
+}
+
+.pub-authors {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  padding: 0.85rem 1.05rem;
+  border-radius: 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+}
+
+.author-self {
+  background: rgba(0, 240, 255, 0.16);
+  color: var(--cyan);
+  font-weight: 700;
+  padding: 0.08rem 0.45rem;
+  border-radius: 6px;
+}
+
+.pub-affil {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.pub-abstract {
+  font-size: 0.94rem;
+  line-height: 1.68;
+  color: var(--text-secondary);
+}
+
+.pub-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+@media (max-width: 640px) {
+  .pub-card {
+    padding: 1.5rem 1.35rem;
+  }
+}
+
 @media (max-width: 1024px) {
   .projects-public-grid {
     grid-template-columns: 1fr;
