@@ -515,36 +515,89 @@
             <form id="db-config-form" class="glass-panel form-panel">
               <div class="panel-head">
                 <div>
-                  <span class="mono-eyebrow">DATABASE CONFIGURATION</span>
-                  <h3>Cloud Database Parameters</h3>
+                  <span class="mono-eyebrow">FIREBASE &amp; CLOUD INFRASTRUCTURE</span>
+                  <h3>Firebase Realtime Database Config</h3>
                 </div>
               </div>
               <p class="muted-copy">
-                Configure your cloud database endpoint. When visitors send transmissions from anywhere in the world on <strong>https://sojolmahfuz.github.io</strong>, they write directly to this database!
+                Connect your Firebase Realtime Database. Any message sent from anywhere in the world on <strong>https://sojolmahfuz.github.io</strong> will be written directly to this cloud database!
               </p>
+              
               <div class="field" style="margin-top: 0.8rem;">
-                <label for="cfg-db-url">FIREBASE REALTIME DATABASE REST URL</label>
+                <label for="cfg-db-url">REALTIME DATABASE URL (databaseURL)</label>
                 <input
                   type="url"
                   id="cfg-db-url"
-                  placeholder="https://<YOUR-PROJECT>-default-rtdb.firebaseio.com"
+                  placeholder="https://alaminmahfuz-portfolio-default-rtdb.firebaseio.com"
                   autocomplete="off"
+                  required
                 />
-                <span style="font-size: 0.76rem; color: var(--text-sub); display: block; margin-top: 0.35rem;">
-                  Works natively across GitHub Pages without server code. Uses REST endpoint <code>/messages.json</code> and <code>/cms.json</code>.
-                </span>
               </div>
+
+              <div class="form-grid-2" style="margin-top: 0.75rem;">
+                <div class="field">
+                  <label for="cfg-project-id">PROJECT ID (projectId)</label>
+                  <input type="text" id="cfg-project-id" placeholder="alaminmahfuz-portfolio" autocomplete="off" />
+                </div>
+                <div class="field">
+                  <label for="cfg-auth-domain">AUTH DOMAIN (authDomain)</label>
+                  <input type="text" id="cfg-auth-domain" placeholder="alaminmahfuz-portfolio.firebaseapp.com" autocomplete="off" />
+                </div>
+              </div>
+
+              <div class="field" style="margin-top: 0.75rem;">
+                <label for="cfg-api-key">API KEY (apiKey - optional for open rules)</label>
+                <input type="text" id="cfg-api-key" placeholder="AIzaSy•••••••••••••••••••••••••••••••••••" autocomplete="off" />
+              </div>
+
+              <div class="field" style="margin-top: 0.9rem;">
+                <label for="cfg-code-paste">OR PASTE FIREBASE CONFIG JS SNIPPET</label>
+                <textarea id="cfg-code-paste" rows="2" placeholder="Paste: const firebaseConfig = { apiKey: '...', databaseURL: '...' };"></textarea>
+                <button type="button" id="btn-parse-snippet" class="btn btn-outline btn-sm" style="margin-top: 0.4rem;">⚡ Auto-Fill Inputs from Snippet</button>
+              </div>
+
               <div class="field" style="margin-top: 0.8rem;">
                 <label class="checkbox-row">
                   <input type="checkbox" id="cfg-auto-sync" checked />
                   <span>Auto-sync all portal changes to Cloud Database on Save</span>
                 </label>
               </div>
+
               <div class="form-actions-end" style="margin-top: 1.2rem; gap: 0.65rem;">
                 <button type="button" id="btn-sync-all-to-db" class="btn btn-outline btn-sm">🚀 Push All Content to Database</button>
-                <button type="submit" class="btn btn-primary btn-sm">Save DB Config</button>
+                <button type="submit" class="btn btn-primary btn-sm">Save &amp; Connect DB</button>
               </div>
             </form>
+
+            <div class="glass-panel" style="grid-column: 1 / -1; margin-top: 1.25rem;">
+              <div class="panel-head">
+                <div>
+                  <span class="mono-eyebrow">FIREBASE SETUP &amp; PERMISSIONS</span>
+                  <h3>Realtime Database Security Rules</h3>
+                </div>
+                <button type="button" id="btn-copy-rules" class="btn btn-outline btn-sm">📋 Copy Security Rules</button>
+              </div>
+              <p class="muted-copy">
+                To allow visitors to transmit messages and your Admin Deck to read and write content smoothly, configure your Firebase Realtime Database Security Rules:
+              </p>
+              <ol style="color: var(--text-sub); font-size: 0.83rem; padding-left: 1.2rem; line-height: 1.6; margin-top: 0.5rem;">
+                <li>Open <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" style="color: var(--cyan);">Firebase Console ↗</a> and choose your project.</li>
+                <li>Under <strong>Build</strong> in the left sidebar, click <strong>Realtime Database</strong>. (If you haven't clicked <em>Create Database</em> yet, click it and select your location).</li>
+                <li>Click the <strong>Rules</strong> tab at the top, paste the JSON below, and click <strong>Publish</strong>:</li>
+              </ol>
+              <pre id="firebase-rules-code" style="background: rgba(0,0,0,0.45); padding: 0.9rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--emerald); border: 1px solid var(--border); overflow-x: auto; margin-top: 0.6rem;">{
+  "rules": {
+    "messages": {
+      ".read": true,
+      ".write": true
+    },
+    "cms": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}</pre>
+            </div>
           </div>
         </section>
 

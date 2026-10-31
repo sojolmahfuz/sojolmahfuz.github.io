@@ -464,6 +464,16 @@
   ],
   "messages": [
     {
+      "id": "msg-1793482677746-bq6p",
+      "name": "Dr. Tariq Rahman",
+      "email": "tariq.rahman@ai-lab.org",
+      "topic": "AI Agent / LLM Integration Project",
+      "message": "Hello Mahfuz, we are interested in your MCP and multi-model autonomous agent research for our research group.",
+      "createdAt": "2026-10-31T21:37:57.746Z",
+      "read": false,
+      "starred": false
+    },
+    {
       "id": "msg-1793470719821-554j",
       "name": "Dr. Tariq Rahman",
       "email": "tariq.rahman@ai-lab.org",

@@ -384,7 +384,24 @@
       // ignore
     }
 
-    // 2. If /api/cms not available, try static data file (works on GitHub Pages, Netlify, static hosts)
+    // 2. Try dynamic Cloud Database (/cms.json on Firebase Realtime DB)
+    if (!remote) {
+      try {
+        const cfg = getDatabaseConfig();
+        const dbUrl = (cfg.databaseURL || cfg.firebaseUrl || "").replace(/\/+$/, "");
+        if (dbUrl) {
+          const res = await fetch(`${dbUrl}/cms.json`, { cache: "no-store" });
+          if (res.ok) {
+            const json = await res.json();
+            if (json && json.profile) remote = json;
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    // 3. If Cloud DB not available, try static data file (works on GitHub Pages, Netlify, static hosts)
     if (!remote) {
       try {
         const staticUrl = "./data/cms-data.json?v=" + Date.now();
@@ -398,7 +415,7 @@
       }
     }
 
-    // 3. Fallback to /data/cms-data.json with absolute root
+    // 4. Fallback to /data/cms-data.json with absolute root
     if (!remote) {
       try {
         const staticUrl = "/data/cms-data.json?v=" + Date.now();
@@ -570,15 +587,25 @@
      ========================================================================== */
   const DB_CONFIG_KEY = "neural_cms_db_config_v2";
   const DEFAULT_DB_CONFIG = {
-    provider: "auto", // "auto" | "firebase" | "server"
+    provider: "firebase", // "firebase" | "auto" | "server"
+    databaseURL: "https://alaminmahfuz-portfolio-default-rtdb.firebaseio.com",
     firebaseUrl: "https://alaminmahfuz-portfolio-default-rtdb.firebaseio.com",
+    apiKey: "",
+    authDomain: "alaminmahfuz-portfolio.firebaseapp.com",
+    projectId: "alaminmahfuz-portfolio",
     autoSync: true
   };
 
   function getDatabaseConfig() {
     try {
       const raw = localStorage.getItem(DB_CONFIG_KEY);
-      if (raw) return Object.assign(clone(DEFAULT_DB_CONFIG), JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const merged = Object.assign(clone(DEFAULT_DB_CONFIG), parsed);
+        merged.databaseURL = (merged.databaseURL || merged.firebaseUrl || DEFAULT_DB_CONFIG.databaseURL).trim();
+        merged.firebaseUrl = merged.databaseURL;
+        return merged;
+      }
     } catch {
       // ignore
     }
@@ -586,7 +613,10 @@
   }
 
   function saveDatabaseConfig(cfg) {
-    const merged = Object.assign(getDatabaseConfig(), cfg || {});
+    const current = getDatabaseConfig();
+    const merged = Object.assign(current, cfg || {});
+    merged.databaseURL = (merged.databaseURL || merged.firebaseUrl || DEFAULT_DB_CONFIG.databaseURL).trim();
+    merged.firebaseUrl = merged.databaseURL;
     localStorage.setItem(DB_CONFIG_KEY, JSON.stringify(merged));
     return merged;
   }
@@ -594,51 +624,91 @@
   async function testDatabaseConnection() {
     const cfg = getDatabaseConfig();
     const start = performance.now();
+    const dbUrl = (cfg.databaseURL || cfg.firebaseUrl || "").replace(/\/+$/, "");
 
     // 1. If not file://, test local server DB endpoint first
+    let localStatus = null;
     if (global.location.protocol !== "file:") {
       try {
         const res = await fetch("/api/db/status", { cache: "no-store" });
         if (res.ok) {
           const json = await res.json();
-          const latency = Math.round(performance.now() - start);
-          return {
+          localStatus = {
             ok: true,
             provider: "Node.js Local Server Database",
             storage: "data/messages.json & data/cms-data.json",
             messagesCount: json.messagesCount,
             unreadCount: json.unreadCount,
-            latencyMs: latency
+            latencyMs: Math.round(performance.now() - start)
           };
         }
       } catch {
-        // local server not available
+        // ignore
       }
     }
 
     // 2. Test Firebase Realtime Database
-    if (cfg.firebaseUrl) {
+    let firebaseStatus = null;
+    if (dbUrl) {
       try {
-        const cleanUrl = cfg.firebaseUrl.replace(/\/+$/, "");
-        const res = await fetch(`${cleanUrl}/.json?shallow=true`, { cache: "no-store" });
-        const latency = Math.round(performance.now() - start);
+        const fbStart = performance.now();
+        const pingUrl = `${dbUrl}/messages.json?shallow=true${cfg.apiKey ? `&auth=${cfg.apiKey}` : ""}`;
+        const res = await fetch(pingUrl, { cache: "no-store" });
+        const latency = Math.round(performance.now() - fbStart);
+
         if (res.ok) {
-          return {
+          firebaseStatus = {
             ok: true,
-            provider: "Firebase Realtime Cloud Database",
-            storage: cleanUrl,
+            provider: "Firebase Realtime Database",
+            storage: dbUrl,
+            statusText: "Connected (Read/Write Operational)",
+            latencyMs: latency
+          };
+        } else if (res.status === 401 || res.status === 403) {
+          firebaseStatus = {
+            ok: false,
+            provider: "Firebase Realtime Database",
+            storage: dbUrl,
+            statusText: "Rules Restricted: Realtime Database Security Rules currently deny public access. Set '.read': true, '.write': true in Firebase Console.",
+            latencyMs: latency
+          };
+        } else if (res.status === 404) {
+          firebaseStatus = {
+            ok: false,
+            provider: "Firebase Realtime Database",
+            storage: dbUrl,
+            statusText: "Database Not Found (404): Please click 'Create Database' under 'Realtime Database' in your Firebase Console (https://console.firebase.google.com).",
+            latencyMs: latency
+          };
+        } else {
+          firebaseStatus = {
+            ok: false,
+            provider: "Firebase Realtime Database",
+            storage: dbUrl,
+            statusText: `Firebase responded with HTTP ${res.status}.`,
             latencyMs: latency
           };
         }
       } catch (err) {
-        // continue
+        firebaseStatus = {
+          ok: false,
+          provider: "Firebase Realtime Database",
+          storage: dbUrl,
+          statusText: "Network/CORS connection check failed: " + err.message,
+          latencyMs: Math.round(performance.now() - start)
+        };
       }
     }
+
+    if (firebaseStatus && firebaseStatus.ok) return firebaseStatus;
+    if (localStatus && localStatus.ok) return { ...localStatus, firebaseInfo: firebaseStatus };
+    if (firebaseStatus) return firebaseStatus;
 
     return {
       ok: true,
       provider: "Offline LocalStorage & Git Sync Engine",
       storage: "Browser LocalStorage Vault",
+      statusText: "Offline Resilience Active",
       latencyMs: 1
     };
   }
