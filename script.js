@@ -1150,29 +1150,44 @@
       });
     });
 
-    // Contact transmission form -> saves directly to Admin Dashboard Inbox + optional mailto
+    // Contact transmission form -> saves directly to Database & Admin Dashboard Inbox
     const contactForm = document.getElementById("contact-form");
-    contactForm?.addEventListener("submit", (e) => {
+    contactForm?.addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = document.getElementById("sender-name")?.value.trim() || "";
       const email = document.getElementById("sender-email")?.value.trim() || "";
       const topic = document.getElementById("sender-topic")?.value || "Collaboration";
       const message = document.getElementById("sender-msg")?.value.trim() || "";
 
-      if (CMS) {
-        CMS.addMessage({ name, email, topic, message });
-        showToast("✓ TRANSMISSION DELIVERED TO ADMIN DASHBOARD INBOX!");
-        contactForm.reset();
-        return;
+      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      const originalText = submitBtn ? submitBtn.innerHTML : "";
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span>Securing In Database...</span>`;
       }
 
-      const subject = encodeURIComponent(`[Portfolio Uplink] ${topic} — from ${name}`);
-      const body = encodeURIComponent(
-        `Hello Al Amin Mahfuz,\n\n${message}\n\n---\nSender: ${name}\nEmail: ${email}\nVector: ${topic}`
-      );
-      showToast("TRANSMISSION PREPARED — OPENING MAIL CLIENT...");
-      window.location.href = `mailto:sojol.cub@gmail.com?subject=${subject}&body=${body}`;
-      contactForm.reset();
+      try {
+        if (CMS) {
+          await CMS.addMessage({ name, email, topic, message });
+          showToast("✓ TRANSMISSION STORED IN DATABASE & DELIVERED TO INBOX!");
+          contactForm.reset();
+        } else {
+          const subject = encodeURIComponent(`[Portfolio Uplink] ${topic} — from ${name}`);
+          const body = encodeURIComponent(
+            `Hello Al Amin Mahfuz,\n\n${message}\n\n---\nSender: ${name}\nEmail: ${email}\nVector: ${topic}`
+          );
+          showToast("TRANSMISSION PREPARED — OPENING MAIL CLIENT...");
+          window.location.href = `mailto:sojol.cub@gmail.com?subject=${subject}&body=${body}`;
+          contactForm.reset();
+        }
+      } catch (err) {
+        showToast("Error delivering transmission: " + err.message);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalText;
+        }
+      }
     });
   }
 

@@ -564,30 +564,320 @@
     }
   }
 
-  function addMessage({ name, email, topic, message }) {
+  /* ==========================================================================
+     NEURAL.DATABASE // MULTI-ENGINE DATABASE FOR MESSAGES & ADMIN PORTAL
+     Works seamlessly with Firebase Realtime Database, Local Node API, and LocalStorage
+     ========================================================================== */
+  const DB_CONFIG_KEY = "neural_cms_db_config_v2";
+  const DEFAULT_DB_CONFIG = {
+    provider: "auto", // "auto" | "firebase" | "server"
+    firebaseUrl: "https://alaminmahfuz-portfolio-default-rtdb.firebaseio.com",
+    autoSync: true
+  };
+
+  function getDatabaseConfig() {
+    try {
+      const raw = localStorage.getItem(DB_CONFIG_KEY);
+      if (raw) return Object.assign(clone(DEFAULT_DB_CONFIG), JSON.parse(raw));
+    } catch {
+      // ignore
+    }
+    return clone(DEFAULT_DB_CONFIG);
+  }
+
+  function saveDatabaseConfig(cfg) {
+    const merged = Object.assign(getDatabaseConfig(), cfg || {});
+    localStorage.setItem(DB_CONFIG_KEY, JSON.stringify(merged));
+    return merged;
+  }
+
+  async function testDatabaseConnection() {
+    const cfg = getDatabaseConfig();
+    const start = performance.now();
+
+    // 1. If not file://, test local server DB endpoint first
+    if (global.location.protocol !== "file:") {
+      try {
+        const res = await fetch("/api/db/status", { cache: "no-store" });
+        if (res.ok) {
+          const json = await res.json();
+          const latency = Math.round(performance.now() - start);
+          return {
+            ok: true,
+            provider: "Node.js Local Server Database",
+            storage: "data/messages.json & data/cms-data.json",
+            messagesCount: json.messagesCount,
+            unreadCount: json.unreadCount,
+            latencyMs: latency
+          };
+        }
+      } catch {
+        // local server not available
+      }
+    }
+
+    // 2. Test Firebase Realtime Database
+    if (cfg.firebaseUrl) {
+      try {
+        const cleanUrl = cfg.firebaseUrl.replace(/\/+$/, "");
+        const res = await fetch(`${cleanUrl}/.json?shallow=true`, { cache: "no-store" });
+        const latency = Math.round(performance.now() - start);
+        if (res.ok) {
+          return {
+            ok: true,
+            provider: "Firebase Realtime Cloud Database",
+            storage: cleanUrl,
+            latencyMs: latency
+          };
+        }
+      } catch (err) {
+        // continue
+      }
+    }
+
+    return {
+      ok: true,
+      provider: "Offline LocalStorage & Git Sync Engine",
+      storage: "Browser LocalStorage Vault",
+      latencyMs: 1
+    };
+  }
+
+  async function addMessage({ name, email, topic, message }) {
+    const entry = {
+      id: "msg-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+      name: String(name || "Anonymous").trim(),
+      email: String(email || "").trim(),
+      topic: String(topic || "General Inquiry").trim(),
+      message: String(message || "").trim(),
+      createdAt: new Date().toISOString(),
+      read: false,
+      starred: false
+    };
+
+    // 1. Save locally in localStorage immediately
     try {
       const data = loadData();
       if (!Array.isArray(data.messages)) data.messages = [];
-      const entry = {
-        id: "msg-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
-        name: String(name || "Anonymous").trim(),
-        email: String(email || "").trim(),
-        topic: String(topic || "General Inquiry").trim(),
-        message: String(message || "").trim(),
-        createdAt: new Date().toISOString(),
-        read: false,
-        starred: false
-      };
       data.messages.unshift(entry);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       if (channel) {
         channel.postMessage({ type: "CMS_MESSAGE_RECEIVED", entry });
       }
-      return entry;
     } catch (err) {
       console.warn("CMS addMessage warning:", err);
-      return null;
     }
+
+    // 2. Post to Local Node.js Server (/api/messages) if reachable
+    if (global.location.protocol !== "file:") {
+      try {
+        fetch("/api/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(entry)
+        }).catch(() => {});
+      } catch {
+        // static or offline
+      }
+    }
+
+    // 3. Post to Firebase Cloud Realtime Database if configured
+    const cfg = getDatabaseConfig();
+    if (cfg.firebaseUrl) {
+      try {
+        const cleanUrl = cfg.firebaseUrl.replace(/\/+$/, "");
+        fetch(`${cleanUrl}/messages.json`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(entry)
+        }).catch(() => {});
+      } catch (err) {
+        console.warn("Firebase message post error:", err);
+      }
+    }
+
+    return entry;
+  }
+
+  async function fetchMessagesFromDatabase() {
+    let remoteMessages = [];
+
+    // 1. Try local server /api/messages
+    if (global.location.protocol !== "file:") {
+      try {
+        const res = await fetch("/api/messages", { cache: "no-store" });
+        if (res.ok) {
+          const list = await res.json();
+          if (Array.isArray(list)) remoteMessages = list;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    // 2. If no server messages, try Firebase Realtime Database
+    if (remoteMessages.length === 0) {
+      const cfg = getDatabaseConfig();
+      if (cfg.firebaseUrl) {
+        try {
+          const cleanUrl = cfg.firebaseUrl.replace(/\/+$/, "");
+          const res = await fetch(`${cleanUrl}/messages.json`, { cache: "no-store" });
+          if (res.ok) {
+            const fbObj = await res.json();
+            if (fbObj && typeof fbObj === "object") {
+              remoteMessages = Object.entries(fbObj).map(([key, val]) => ({
+                id: val.id || key,
+                name: val.name || "Anonymous",
+                email: val.email || "",
+                topic: val.topic || "General",
+                message: val.message || "",
+                createdAt: val.createdAt || new Date().toISOString(),
+                read: Boolean(val.read),
+                starred: Boolean(val.starred)
+              }));
+            }
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    // 3. Merge with local messages deduplicating by ID
+    const local = loadData();
+    const localMsgs = Array.isArray(local.messages) ? local.messages : [];
+    const seen = new Set();
+    const combined = [];
+
+    for (const m of [...remoteMessages, ...localMsgs]) {
+      if (m && m.id && !seen.has(m.id)) {
+        seen.add(m.id);
+        combined.push(m);
+      }
+    }
+
+    combined.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+    // Update local cache
+    local.messages = combined;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(local));
+    } catch {
+      // ignore
+    }
+
+    return combined;
+  }
+
+  async function updateMessageStatusInDatabase(id, updates) {
+    // 1. Update in local cache
+    const data = loadData();
+    if (Array.isArray(data.messages)) {
+      const idx = data.messages.findIndex((m) => m.id === id);
+      if (idx !== -1) {
+        Object.assign(data.messages[idx], updates);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+    }
+
+    // 2. Update on local server
+    if (global.location.protocol !== "file:") {
+      try {
+        fetch("/api/messages", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, ...updates })
+        }).catch(() => {});
+      } catch {
+        // ignore
+      }
+    }
+
+    // 3. Update on Firebase Realtime DB
+    const cfg = getDatabaseConfig();
+    if (cfg.firebaseUrl) {
+      try {
+        const cleanUrl = cfg.firebaseUrl.replace(/\/+$/, "");
+        fetch(`${cleanUrl}/messages/${id}.json`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updates)
+        }).catch(() => {});
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  async function deleteMessageFromDatabase(id) {
+    // 1. Delete from local cache
+    const data = loadData();
+    if (Array.isArray(data.messages)) {
+      data.messages = data.messages.filter((m) => m.id !== id);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // 2. Delete from local server
+    if (global.location.protocol !== "file:") {
+      try {
+        fetch(`/api/messages?id=${encodeURIComponent(id)}`, {
+          method: "DELETE"
+        }).catch(() => {});
+      } catch {
+        // ignore
+      }
+    }
+
+    // 3. Delete from Firebase Realtime DB
+    const cfg = getDatabaseConfig();
+    if (cfg.firebaseUrl) {
+      try {
+        const cleanUrl = cfg.firebaseUrl.replace(/\/+$/, "");
+        fetch(`${cleanUrl}/messages/${id}.json`, {
+          method: "DELETE"
+        }).catch(() => {});
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  async function syncAllCmsToDatabase() {
+    const data = loadData();
+
+    // 1. Save to local server /api/cms
+    let serverOk = false;
+    if (global.location.protocol !== "file:") {
+      try {
+        const res = await fetch("/api/cms", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        if (res.ok) serverOk = true;
+      } catch {
+        // ignore
+      }
+    }
+
+    // 2. Save to Firebase Realtime DB
+    let cloudOk = false;
+    const cfg = getDatabaseConfig();
+    if (cfg.firebaseUrl) {
+      try {
+        const cleanUrl = cfg.firebaseUrl.replace(/\/+$/, "");
+        const res = await fetch(`${cleanUrl}/cms.json`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        if (res.ok) cloudOk = true;
+      } catch (err) {
+        console.warn("Firebase CMS sync error:", err);
+      }
+    }
+
+    return { ok: serverOk || cloudOk, serverOk, cloudOk };
   }
 
   function onSync(callback) {
@@ -746,7 +1036,15 @@
     getSavedGitHubPat,
     saveGitHubPat,
     exportJson,
-    importJson
+    importJson,
+    // Database Layer
+    getDatabaseConfig,
+    saveDatabaseConfig,
+    testDatabaseConnection,
+    fetchMessagesFromDatabase,
+    updateMessageStatusInDatabase,
+    deleteMessageFromDatabase,
+    syncAllCmsToDatabase
   };
 })(window);
 

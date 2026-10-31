@@ -464,6 +464,16 @@
   ],
   "messages": [
     {
+      "id": "msg-1793470719821-554j",
+      "name": "Dr. Tariq Rahman",
+      "email": "tariq.rahman@ai-lab.org",
+      "topic": "AI Agent / LLM Integration Project",
+      "message": "Hello Mahfuz, we are interested in your MCP and multi-model autonomous agent research for our research group.",
+      "createdAt": "2026-10-31T18:18:39.821Z",
+      "read": false,
+      "starred": false
+    },
+    {
       "id": "msg-welcome-1",
       "name": "NEURAL.CMS System",
       "email": "sojol.cub@gmail.com",

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "msg-welcome-1",
+    "name": "NEURAL.CMS System",
+    "email": "sojol.cub@gmail.com",
+    "topic": "System Initialization",
+    "message": "Welcome to your futuristic Admin Command Deck! Any messages submitted through your portfolio's 'Send Direct Transmission' form are persisted in your database and appear right here in real time.",
+    "createdAt": "2026-10-31T18:00:00.000Z",
+    "read": false,
+    "starred": true
+  }
+]

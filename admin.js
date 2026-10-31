@@ -26,6 +26,7 @@
     publications: "Journal Publications CRUD",
     projects: "Featured Projects Showcase",
     inbox: "Visitor Transmissions Inbox",
+    database: "Database & Cloud Infrastructure",
     security: "Security & Vault Backup"
   };
 
@@ -72,6 +73,11 @@
     markSynced();
     renderAll();
     if (toastMsg) showToast(toastMsg);
+    // Background auto-sync to cloud & local database
+    const cfg = CMS.getDatabaseConfig();
+    if (cfg && cfg.autoSync) {
+      CMS.syncAllCmsToDatabase().catch(() => {});
+    }
   }
 
   /* -------------------- 1. AMBIENT NEURAL CANVAS -------------------- */
@@ -1228,6 +1234,7 @@
         const msg = cmsData.messages.find((x) => x.id === btn.dataset.msgRead);
         if (!msg) return;
         msg.read = !msg.read;
+        CMS.updateMessageStatusInDatabase(msg.id, { read: msg.read });
         persistAndRefresh(msg.read ? "Marked as read." : "Marked as unread.");
       });
     });
@@ -1237,6 +1244,7 @@
         const msg = cmsData.messages.find((x) => x.id === btn.dataset.msgStar);
         if (!msg) return;
         msg.starred = !msg.starred;
+        CMS.updateMessageStatusInDatabase(msg.id, { starred: msg.starred });
         persistAndRefresh(msg.starred ? "Message starred." : "Star removed.");
       });
     });
@@ -1245,8 +1253,104 @@
       btn.addEventListener("click", () => {
         const id = btn.dataset.msgDel;
         cmsData.messages = cmsData.messages.filter((x) => x.id !== id);
-        persistAndRefresh("Transmission deleted.");
+        CMS.deleteMessageFromDatabase(id);
+        persistAndRefresh("Transmission deleted from database.");
       });
+    });
+  }
+
+  /* -------------------- 11B. DATABASE & CLOUD INFRASTRUCTURE -------------------- */
+  function initDatabasePanel() {
+    const cfg = CMS.getDatabaseConfig();
+    const urlInput = $("#cfg-db-url");
+    const autoSyncInput = $("#cfg-auto-sync");
+
+    if (urlInput) urlInput.value = cfg.firebaseUrl || "";
+    if (autoSyncInput) autoSyncInput.checked = cfg.autoSync !== false;
+
+    const updateDbStats = (result) => {
+      const messages = Array.isArray(cmsData.messages) ? cmsData.messages : [];
+      const msgCountEl = $("#db-stat-messages");
+      const providerEl = $("#db-stat-provider");
+      const pingEl = $("#db-stat-ping");
+      const badgeEl = $("#db-health-badge");
+
+      if (msgCountEl) msgCountEl.textContent = String(messages.length);
+      if (result) {
+        if (providerEl) providerEl.textContent = result.provider || "Hybrid Database";
+        if (pingEl) pingEl.textContent = `${result.latencyMs || "< 5"} ms`;
+        if (badgeEl) {
+          badgeEl.textContent = result.ok ? "CONNECTED" : "OFFLINE";
+          badgeEl.style.color = result.ok ? "var(--emerald)" : "var(--rose)";
+        }
+      }
+    };
+
+    updateDbStats();
+
+    $("#db-config-form")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const firebaseUrl = $("#cfg-db-url")?.value.trim() || "";
+      const autoSync = $("#cfg-auto-sync")?.checked !== false;
+      CMS.saveDatabaseConfig({ firebaseUrl, autoSync });
+      showToast("Cloud Database parameters saved!");
+    });
+
+    $("#btn-test-db-connection")?.addEventListener("click", async () => {
+      const box = $("#db-test-result");
+      if (box) {
+        box.style.display = "block";
+        box.style.color = "var(--cyan)";
+        box.textContent = "Pinging Database endpoints...";
+      }
+      const res = await CMS.testDatabaseConnection();
+      updateDbStats(res);
+      if (box) {
+        box.style.color = res.ok ? "var(--emerald)" : "var(--rose)";
+        box.innerHTML = `
+          <strong>Database Status:</strong> ${res.ok ? "✓ Online &amp; Operational" : "✗ Error"}<br>
+          <strong>Active Engine:</strong> ${res.provider}<br>
+          <strong>Storage Location:</strong> ${res.storage}<br>
+          <strong>Latency:</strong> ${res.latencyMs} ms
+        `;
+      }
+      showToast(res.ok ? "Database connection verified!" : "Database ping failed.");
+    });
+
+    const handlePullMessages = async () => {
+      showToast("Fetching transmissions from database...");
+      const fresh = await CMS.fetchMessagesFromDatabase();
+      cmsData.messages = fresh;
+      renderInbox();
+      updateDbStats();
+      showToast(`✓ Database synchronized! (${fresh.length} messages loaded)`);
+    };
+
+    $("#btn-pull-db-messages")?.addEventListener("click", handlePullMessages);
+    $("#refresh-inbox-db-btn")?.addEventListener("click", handlePullMessages);
+
+    $("#btn-export-db-messages")?.addEventListener("click", () => {
+      const messages = Array.isArray(cmsData.messages) ? cmsData.messages : [];
+      const blob = new Blob([JSON.stringify(messages, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `neural-messages-db-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("Messages database exported (.json)!");
+    });
+
+    $("#btn-sync-all-to-db")?.addEventListener("click", async () => {
+      showToast("Pushing full portal state to database...");
+      const res = await CMS.syncAllCmsToDatabase();
+      if (res.ok) {
+        showToast("✓ All admin portal content persisted to database!");
+      } else {
+        showToast("Database sync warning: could not reach remote endpoint.");
+      }
     });
   }
 
@@ -1459,8 +1563,17 @@
     initModal();
     initProfileEditor();
     initCrudToolbars();
+    initDatabasePanel();
     initSecurityAndVault();
     initAuthGate();
+
+    // Pull latest messages from database
+    CMS.fetchMessagesFromDatabase().then((msgs) => {
+      if (Array.isArray(msgs) && msgs.length > 0) {
+        cmsData.messages = msgs;
+        renderInbox();
+      }
+    }).catch(() => {});
 
     CMS.onSync((freshData) => {
       cmsData = freshData;

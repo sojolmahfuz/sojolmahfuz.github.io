@@ -149,6 +149,11 @@
           <span>Transmissions Inbox</span>
           <span id="count-unread" class="side-pill pill-alert">1</span>
         </button>
+        <button type="button" class="side-link" data-tab="database">
+          <span class="side-ic">🗄</span>
+          <span>Database &amp; Cloud</span>
+          <span id="db-nav-badge" class="side-pill" style="background:rgba(0,240,255,0.18);color:var(--cyan);">ONLINE</span>
+        </button>
         <button type="button" class="side-link" data-tab="security">
           <span class="side-ic">⚙</span>
           <span>Security &amp; Backup</span>
@@ -466,6 +471,7 @@
                 <h3>Visitor Transmissions Inbox</h3>
               </div>
               <div class="head-controls">
+                <button type="button" id="refresh-inbox-db-btn" class="btn btn-outline btn-sm">🔄 Sync with Database</button>
                 <button type="button" id="mark-all-read" class="btn btn-outline btn-sm">Mark All Read</button>
               </div>
             </div>
@@ -473,7 +479,76 @@
           </div>
         </section>
 
-        <!-- ==================== TAB 7: SECURITY & BACKUP ==================== -->
+        <!-- ==================== TAB 7: DATABASE & CLOUD INFRASTRUCTURE ==================== -->
+        <section id="tab-database" class="tab-panel">
+          <div class="overview-split">
+            <div class="glass-panel">
+              <div class="panel-head">
+                <div>
+                  <span class="mono-eyebrow">DATABASE TELEMETRY</span>
+                  <h3>Live Storage &amp; Connectivity Status</h3>
+                </div>
+                <span id="db-health-badge" class="status-tag" style="background:rgba(16,185,129,0.18);color:var(--emerald);">CONNECTED</span>
+              </div>
+              <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); margin-top: 1rem;">
+                <div class="kpi-card" style="padding: 0.85rem;">
+                  <div class="kpi-label">DATABASE ENGINE</div>
+                  <div id="db-stat-provider" class="kpi-val" style="font-size: 1.05rem;">Hybrid Node + Cloud</div>
+                </div>
+                <div class="kpi-card" style="padding: 0.85rem;">
+                  <div class="kpi-label">STORED MESSAGES</div>
+                  <div id="db-stat-messages" class="kpi-val" style="font-size: 1.05rem;">0</div>
+                </div>
+                <div class="kpi-card" style="padding: 0.85rem;">
+                  <div class="kpi-label">CONNECTION PING</div>
+                  <div id="db-stat-ping" class="kpi-val" style="font-size: 1.05rem;">&lt; 5 ms</div>
+                </div>
+              </div>
+              <div class="vault-btn-stack" style="margin-top: 1.25rem;">
+                <button type="button" id="btn-test-db-connection" class="btn btn-outline btn-block">⚡ Ping &amp; Test Database Uplink</button>
+                <button type="button" id="btn-pull-db-messages" class="btn btn-outline btn-block">📥 Pull All Messages from Database</button>
+                <button type="button" id="btn-export-db-messages" class="btn btn-outline btn-block">📦 Export Messages Database (.json)</button>
+              </div>
+              <div id="db-test-result" class="log-row" style="margin-top: 1rem; display: none;"></div>
+            </div>
+
+            <form id="db-config-form" class="glass-panel form-panel">
+              <div class="panel-head">
+                <div>
+                  <span class="mono-eyebrow">DATABASE CONFIGURATION</span>
+                  <h3>Cloud Database Parameters</h3>
+                </div>
+              </div>
+              <p class="muted-copy">
+                Configure your cloud database endpoint. When visitors send transmissions from anywhere in the world on <strong>https://sojolmahfuz.github.io</strong>, they write directly to this database!
+              </p>
+              <div class="field" style="margin-top: 0.8rem;">
+                <label for="cfg-db-url">FIREBASE REALTIME DATABASE REST URL</label>
+                <input
+                  type="url"
+                  id="cfg-db-url"
+                  placeholder="https://<YOUR-PROJECT>-default-rtdb.firebaseio.com"
+                  autocomplete="off"
+                />
+                <span style="font-size: 0.76rem; color: var(--text-sub); display: block; margin-top: 0.35rem;">
+                  Works natively across GitHub Pages without server code. Uses REST endpoint <code>/messages.json</code> and <code>/cms.json</code>.
+                </span>
+              </div>
+              <div class="field" style="margin-top: 0.8rem;">
+                <label class="checkbox-row">
+                  <input type="checkbox" id="cfg-auto-sync" checked />
+                  <span>Auto-sync all portal changes to Cloud Database on Save</span>
+                </label>
+              </div>
+              <div class="form-actions-end" style="margin-top: 1.2rem; gap: 0.65rem;">
+                <button type="button" id="btn-sync-all-to-db" class="btn btn-outline btn-sm">🚀 Push All Content to Database</button>
+                <button type="submit" class="btn btn-primary btn-sm">Save DB Config</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ==================== TAB 8: SECURITY & BACKUP ==================== -->
         <section id="tab-security" class="tab-panel">
           <div class="overview-split">
             <form id="creds-form" class="glass-panel form-panel">
