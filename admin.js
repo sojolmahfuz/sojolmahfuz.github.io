@@ -1262,15 +1262,13 @@
   /* -------------------- 11B. DATABASE & CLOUD INFRASTRUCTURE -------------------- */
   function initDatabasePanel() {
     const cfg = CMS.getDatabaseConfig();
+    const providerSelect = $("#cfg-db-provider");
     const urlInput = $("#cfg-db-url");
-    const projInput = $("#cfg-project-id");
-    const authInput = $("#cfg-auth-domain");
     const apiInput = $("#cfg-api-key");
     const autoSyncInput = $("#cfg-auto-sync");
 
-    if (urlInput) urlInput.value = cfg.databaseURL || cfg.firebaseUrl || "https://alaminmahfuz-portfolio-default-rtdb.firebaseio.com";
-    if (projInput) projInput.value = cfg.projectId || "alaminmahfuz-portfolio";
-    if (authInput) authInput.value = cfg.authDomain || "alaminmahfuz-portfolio.firebaseapp.com";
+    if (providerSelect) providerSelect.value = cfg.provider || "native";
+    if (urlInput) urlInput.value = cfg.endpointURL || "";
     if (apiInput) apiInput.value = cfg.apiKey || "";
     if (autoSyncInput) autoSyncInput.checked = cfg.autoSync !== false;
 
@@ -1283,10 +1281,10 @@
 
       if (msgCountEl) msgCountEl.textContent = String(messages.length);
       if (result) {
-        if (providerEl) providerEl.textContent = result.provider || "Hybrid Database";
+        if (providerEl) providerEl.textContent = result.provider || "Native Zero-Cost DB";
         if (pingEl) pingEl.textContent = `${result.latencyMs || "< 5"} ms`;
         if (badgeEl) {
-          badgeEl.textContent = result.ok ? "CONNECTED" : (result.statusText?.includes("Rules") ? "RULES RESTRICTED" : (result.statusText?.includes("404") ? "NOT CREATED (404)" : "OFFLINE"));
+          badgeEl.textContent = result.ok ? "ONLINE (100% FREE)" : "OFFLINE";
           badgeEl.style.color = result.ok ? "var(--emerald)" : "var(--rose)";
           badgeEl.style.background = result.ok ? "rgba(16,185,129,0.18)" : "rgba(244,63,94,0.18)";
         }
@@ -1295,59 +1293,24 @@
 
     updateDbStats();
 
-    // Auto-parse pasted JS snippet
-    $("#btn-parse-snippet")?.addEventListener("click", () => {
-      const text = $("#cfg-code-paste")?.value || "";
-      if (!text.trim()) {
-        showToast("Please paste your firebaseConfig snippet first.");
-        return;
-      }
-      const extract = (key) => {
-        const match = text.match(new RegExp(`${key}\\s*:\\s*["'\`]([^"'\`]+)["'\`]`));
-        return match ? match[1].trim() : "";
-      };
-
-      const extractedUrl = extract("databaseURL");
-      const extractedKey = extract("apiKey");
-      const extractedAuth = extract("authDomain");
-      const extractedProj = extract("projectId");
-
-      if (extractedUrl && urlInput) urlInput.value = extractedUrl;
-      if (extractedKey && apiInput) apiInput.value = extractedKey;
-      if (extractedAuth && authInput) authInput.value = extractedAuth;
-      if (extractedProj && projInput) projInput.value = extractedProj;
-
-      showToast("✓ Firebase Config properties extracted!");
-    });
-
-    // Copy Security Rules button
-    $("#btn-copy-rules")?.addEventListener("click", async () => {
-      const code = $("#firebase-rules-code")?.textContent || "";
-      try {
-        await navigator.clipboard.writeText(code);
-        showToast("✓ Firebase Security Rules copied to clipboard!");
-      } catch {
-        showToast("Rules ready in box.");
-      }
-    });
+    // Run passive connection ping on boot
+    CMS.testDatabaseConnection().then(updateDbStats).catch(() => {});
 
     $("#db-config-form")?.addEventListener("submit", (e) => {
       e.preventDefault();
-      const databaseURL = $("#cfg-db-url")?.value.trim() || "";
-      const projectId = $("#cfg-project-id")?.value.trim() || "";
-      const authDomain = $("#cfg-auth-domain")?.value.trim() || "";
-      const apiKey = $("#cfg-api-key")?.value.trim() || "";
-      const autoSync = $("#cfg-auto-sync")?.checked !== false;
+      const provider = providerSelect?.value || "native";
+      const endpointURL = urlInput?.value.trim() || "";
+      const apiKey = apiInput?.value.trim() || "";
+      const autoSync = autoSyncInput?.checked !== false;
 
       CMS.saveDatabaseConfig({
-        databaseURL,
-        firebaseUrl: databaseURL,
-        projectId,
-        authDomain,
+        provider,
+        endpointURL,
         apiKey,
         autoSync
       });
-      showToast("Cloud Database parameters saved!");
+      showToast("✓ Database configuration updated!");
+      CMS.testDatabaseConnection().then(updateDbStats);
     });
 
     $("#btn-test-db-connection")?.addEventListener("click", async () => {
