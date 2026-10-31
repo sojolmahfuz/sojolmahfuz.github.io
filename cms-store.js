@@ -328,6 +328,28 @@
     channel = null;
   }
 
+  function mergeWithDefaults(parsed) {
+    if (!parsed || typeof parsed !== "object") return clone(DEFAULT_CMS_DATA);
+    const def = clone(DEFAULT_CMS_DATA);
+    return {
+      updatedAt: parsed.updatedAt || def.updatedAt,
+      profile: Object.assign(def.profile, parsed.profile || {}, {
+        metrics: Object.assign(def.profile.metrics, parsed.profile?.metrics || {}),
+        typewriterRoles: Array.isArray(parsed.profile?.typewriterRoles) && parsed.profile.typewriterRoles.length > 0
+          ? parsed.profile.typewriterRoles
+          : def.profile.typewriterRoles
+      }),
+      experiences: Array.isArray(parsed.experiences) && parsed.experiences.length > 0 ? parsed.experiences : def.experiences,
+      skills: Array.isArray(parsed.skills) && parsed.skills.length > 0 ? parsed.skills : def.skills,
+      publicationsSectionEnabled: parsed.publicationsSectionEnabled !== false,
+      publications: Array.isArray(parsed.publications) ? parsed.publications : def.publications,
+      projectsSectionEnabled: parsed.projectsSectionEnabled !== false,
+      projects: Array.isArray(parsed.projects) ? parsed.projects : def.projects,
+      messages: Array.isArray(parsed.messages) ? parsed.messages : def.messages,
+      analytics: Object.assign(def.analytics, parsed.analytics || {})
+    };
+  }
+
   function loadData() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -337,10 +359,7 @@
         return seed;
       }
       const parsed = JSON.parse(raw);
-      return Object.assign(clone(DEFAULT_CMS_DATA), parsed, {
-        profile: Object.assign(clone(DEFAULT_CMS_DATA.profile), parsed.profile || {}),
-        analytics: Object.assign(clone(DEFAULT_CMS_DATA.analytics), parsed.analytics || {})
-      });
+      return mergeWithDefaults(parsed);
     } catch {
       return clone(DEFAULT_CMS_DATA);
     }
@@ -348,22 +367,74 @@
 
   async function syncFromServerIfAvailable() {
     if (global.location.protocol === "file:") return loadData();
+
+    let remote = null;
+
+    // 1. Try dynamic /api/cms (for local Node.js server)
     try {
       const res = await fetch("/api/cms", { cache: "no-store" });
       if (res.ok) {
-        const remote = await res.json();
-        if (remote && remote.profile) {
-          const merged = Object.assign(clone(DEFAULT_CMS_DATA), remote, {
-            profile: Object.assign(clone(DEFAULT_CMS_DATA.profile), remote.profile || {}),
-            analytics: Object.assign(clone(DEFAULT_CMS_DATA.analytics), remote.analytics || {})
-          });
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-          return merged;
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const json = await res.json();
+          if (json && json.profile) remote = json;
         }
       }
     } catch {
-      // Offline or static server without /api/cms — localStorage handles everything seamlessly
+      // ignore
     }
+
+    // 2. If /api/cms not available, try static data file (works on GitHub Pages, Netlify, static hosts)
+    if (!remote) {
+      try {
+        const staticUrl = "./data/cms-data.json?v=" + Date.now();
+        const res = await fetch(staticUrl, { cache: "no-store" });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.profile) remote = json;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    // 3. Fallback to /data/cms-data.json with absolute root
+    if (!remote) {
+      try {
+        const staticUrl = "/data/cms-data.json?v=" + Date.now();
+        const res = await fetch(staticUrl, { cache: "no-store" });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && json.profile) remote = json;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    if (remote) {
+      const local = loadData();
+      const localRaw = localStorage.getItem(STORAGE_KEY);
+      const isLocalInitialized = Boolean(localRaw);
+
+      const remoteTime = new Date(remote.updatedAt || 0).getTime();
+      const localTime = new Date(local.updatedAt || 0).getTime();
+
+      // If remote data is newer or local is uninitialized, adopt remote data
+      if (!isLocalInitialized || remoteTime >= localTime) {
+        const merged = mergeWithDefaults(remote);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        } catch {
+          // ignore
+        }
+        return merged;
+      } else {
+        // Local is newer! Keep local data so user's recent edits in admin are never erased.
+        return local;
+      }
+    }
+
     return loadData();
   }
 
@@ -460,51 +531,69 @@
     localStorage.removeItem(AUTH_KEY);
   }
 
-  /* -------------------- TELEMETRY HELPERS -------------------- */
+  /* -------------------- TELEMETRY & INBOX (NON-DESTRUCTIVE) -------------------- */
   function recordPageView() {
-    const data = loadData();
-    data.analytics.pageViews = (data.analytics.pageViews || 0) + 1;
-    if (Array.isArray(data.analytics.dailyViews) && data.analytics.dailyViews.length > 0) {
-      const last = data.analytics.dailyViews.length - 1;
-      data.analytics.dailyViews[last] = (data.analytics.dailyViews[last] || 0) + 1;
+    try {
+      const data = loadData();
+      data.analytics = data.analytics || {};
+      data.analytics.pageViews = (data.analytics.pageViews || 0) + 1;
+      if (Array.isArray(data.analytics.dailyViews) && data.analytics.dailyViews.length > 0) {
+        const last = data.analytics.dailyViews.length - 1;
+        data.analytics.dailyViews[last] = (data.analytics.dailyViews[last] || 0) + 1;
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch {
+      // ignore
     }
-    saveData(data, true);
   }
 
   function recordAiQuery(question, model) {
-    const data = loadData();
-    if (!Array.isArray(data.analytics.aiQueries)) data.analytics.aiQueries = [];
-    data.analytics.aiQueries.unshift({
-      q: String(question).slice(0, 160),
-      model: model || "Claude",
-      at: new Date().toISOString()
-    });
-    data.analytics.aiQueries = data.analytics.aiQueries.slice(0, 30);
-    saveData(data);
+    try {
+      const data = loadData();
+      data.analytics = data.analytics || {};
+      if (!Array.isArray(data.analytics.aiQueries)) data.analytics.aiQueries = [];
+      data.analytics.aiQueries.unshift({
+        q: String(question).slice(0, 160),
+        model: model || "Claude",
+        at: new Date().toISOString()
+      });
+      data.analytics.aiQueries = data.analytics.aiQueries.slice(0, 30);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch {
+      // ignore
+    }
   }
 
   function addMessage({ name, email, topic, message }) {
-    const data = loadData();
-    if (!Array.isArray(data.messages)) data.messages = [];
-    const entry = {
-      id: "msg-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
-      name: String(name || "Anonymous").trim(),
-      email: String(email || "").trim(),
-      topic: String(topic || "General Inquiry").trim(),
-      message: String(message || "").trim(),
-      createdAt: new Date().toISOString(),
-      read: false,
-      starred: false
-    };
-    data.messages.unshift(entry);
-    saveData(data);
-    return entry;
+    try {
+      const data = loadData();
+      if (!Array.isArray(data.messages)) data.messages = [];
+      const entry = {
+        id: "msg-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+        name: String(name || "Anonymous").trim(),
+        email: String(email || "").trim(),
+        topic: String(topic || "General Inquiry").trim(),
+        message: String(message || "").trim(),
+        createdAt: new Date().toISOString(),
+        read: false,
+        starred: false
+      };
+      data.messages.unshift(entry);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      if (channel) {
+        channel.postMessage({ type: "CMS_MESSAGE_RECEIVED", entry });
+      }
+      return entry;
+    } catch (err) {
+      console.warn("CMS addMessage warning:", err);
+      return null;
+    }
   }
 
   function onSync(callback) {
     if (channel) {
       channel.addEventListener("message", (ev) => {
-        if (ev.data && ev.data.type === "CMS_UPDATED") {
+        if (ev.data && (ev.data.type === "CMS_UPDATED" || ev.data.type === "CMS_MESSAGE_RECEIVED")) {
           callback(loadData());
         }
       });
@@ -516,12 +605,133 @@
     });
   }
 
+  /* -------------------- GITHUB PAGES & CLOUD PUBLISH ENGINE -------------------- */
+  const GITHUB_REPO = "sojolmahfuz/sojolmahfuz.github.io";
+  const GITHUB_PAT_KEY = "neural_cms_github_pat_v1";
+
+  function getSavedGitHubPat() {
+    try {
+      return localStorage.getItem(GITHUB_PAT_KEY) || "";
+    } catch {
+      return "";
+    }
+  }
+
+  function saveGitHubPat(token) {
+    try {
+      if (token) localStorage.setItem(GITHUB_PAT_KEY, String(token).trim());
+      else localStorage.removeItem(GITHUB_PAT_KEY);
+    } catch {
+      // ignore
+    }
+  }
+
+  async function publishToGitHub(patToken, customMessage) {
+    const token = String(patToken || getSavedGitHubPat()).trim();
+    if (!token) {
+      return {
+        ok: false,
+        error: "GitHub Personal Access Token is required to commit directly to GitHub Pages repository."
+      };
+    }
+
+    const data = loadData();
+    const filePath = "data/cms-data.json";
+    const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${filePath}`;
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github.v3+json",
+      "Content-Type": "application/json"
+    };
+
+    // 1. Get current SHA of data/cms-data.json from GitHub
+    let sha = null;
+    try {
+      const getRes = await fetch(apiUrl + "?ref=main", { headers, cache: "no-store" });
+      if (getRes.ok) {
+        const meta = await getRes.json();
+        sha = meta.sha;
+      }
+    } catch (err) {
+      console.warn("Could not retrieve current file SHA from GitHub:", err);
+    }
+
+    // 2. Base64 encode the CMS data with UTF-8 support
+    const jsonStr = JSON.stringify(data, null, 2);
+    const utf8Bytes = new TextEncoder().encode(jsonStr);
+    let binary = "";
+    for (let i = 0; i < utf8Bytes.length; i++) {
+      binary += String.fromCharCode(utf8Bytes[i]);
+    }
+    const b64Content = btoa(binary);
+
+    const commitMessage = customMessage || `NeuralCMS Live Sync: ${new Date().toLocaleString("en-GB")}`;
+
+    const payload = {
+      message: commitMessage,
+      content: b64Content,
+      branch: "main"
+    };
+    if (sha) payload.sha = sha;
+
+    try {
+      const putRes = await fetch(apiUrl, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(payload)
+      });
+      const resJson = await putRes.json().catch(() => ({}));
+      if (putRes.ok) {
+        saveGitHubPat(token);
+        return {
+          ok: true,
+          commitUrl: resJson.commit?.html_url || `https://github.com/${GITHUB_REPO}/commits/main`
+        };
+      } else {
+        const msg = resJson.message || `GitHub API responded with status ${putRes.status}`;
+        return { ok: false, error: msg };
+      }
+    } catch (err) {
+      return { ok: false, error: String(err.message || err) };
+    }
+  }
+
+  function exportJson() {
+    const data = loadData();
+    const str = JSON.stringify(data, null, 2);
+    const blob = new Blob([str], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `cms-data-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function importJson(jsonString) {
+    try {
+      const parsed = JSON.parse(jsonString);
+      if (!parsed || !parsed.profile) {
+        return { ok: false, error: "Invalid snapshot: Missing profile section." };
+      }
+      const merged = mergeWithDefaults(parsed);
+      saveData(merged);
+      return { ok: true, data: merged };
+    } catch (err) {
+      return { ok: false, error: "Failed to parse JSON file: " + err.message };
+    }
+  }
+
   global.NeuralCMS = {
     DEFAULT_CMS_DATA,
     loadData,
     saveData,
     syncFromServerIfAvailable,
     resetToDefaults,
+    mergeWithDefaults,
     login,
     logout,
     getSession,
@@ -531,7 +741,12 @@
     recordPageView,
     recordAiQuery,
     addMessage,
-    onSync
+    onSync,
+    publishToGitHub,
+    getSavedGitHubPat,
+    saveGitHubPat,
+    exportJson,
+    importJson
   };
 })(window);
 

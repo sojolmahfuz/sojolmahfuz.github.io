@@ -178,6 +178,9 @@
         </div>
 
         <div class="topbar-right">
+          <button type="button" id="btn-top-publish" class="btn btn-sm btn-primary" title="Publish changes live to GitHub Pages so everyone sees them">
+            <span>🚀 Publish Live</span>
+          </button>
           <div class="sync-indicator" title="Live synced with public portfolio">
             <span class="sync-dot"></span>
             <span id="sync-status-text">LIVE SYNC READY</span>
@@ -512,6 +515,33 @@
                 </label>
                 <button type="button" id="factory-reset-btn" class="btn btn-danger-ghost btn-block">↺ Reset Content to Updated 2026 CV Defaults</button>
               </div>
+            </div>
+
+            <div class="glass-panel" style="grid-column: 1 / -1; margin-top: 1.25rem;">
+              <div class="panel-head">
+                <div>
+                  <span class="mono-eyebrow">LIVE DEPLOYMENT ENGINE</span>
+                  <h3>GitHub Pages 1-Click Cloud Sync</h3>
+                </div>
+                <span class="status-tag" style="background: rgba(0, 240, 255, 0.15); color: var(--cyan);">sojolmahfuz/sojolmahfuz.github.io</span>
+              </div>
+              <p class="muted-copy">
+                When you make edits in this Admin Deck, they immediately update your local browser and local Node server. To push your latest changes live to <strong>https://sojolmahfuz.github.io</strong> so all visitors across the world see them:
+              </p>
+              <div class="form-grid-2" style="margin-top: 1rem; align-items: end;">
+                <div class="field">
+                  <label for="gh-pat-token">GITHUB PERSONAL ACCESS TOKEN (PAT)</label>
+                  <input type="password" id="gh-pat-token" placeholder="ghp_••••••••••••••••••••••••••••••••••••" autocomplete="off" />
+                  <span style="font-size: 0.76rem; color: var(--text-sub); display: block; margin-top: 0.35rem;">
+                    Required when publishing from GitHub Pages. Needs <code>repo</code> scope. Saved securely only in your browser's private local vault.
+                  </span>
+                </div>
+                <div class="form-actions-end" style="gap: 0.75rem;">
+                  <button type="button" id="save-pat-btn" class="btn btn-outline btn-sm">Save Token</button>
+                  <button type="button" id="publish-github-btn" class="btn btn-primary btn-sm">🚀 Push Changes Live to GitHub</button>
+                </div>
+              </div>
+              <div id="publish-status-box" class="log-row" style="margin-top: 1rem; display: none;"></div>
             </div>
           </div>
         </section>

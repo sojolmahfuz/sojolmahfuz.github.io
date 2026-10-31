@@ -2,6 +2,7 @@ import http from "http";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { exec } from "child_process";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = __dirname;
@@ -27,7 +28,30 @@ const mime = {
 http.createServer((req, res) => {
   const urlPath = decodeURIComponent((req.url || "/").split("?")[0]);
 
-  // Persistent JSON API for NEURAL.CMS Admin Command Deck
+  // 1. One-Click Git Commit & Push to GitHub Pages
+  if (urlPath === "/api/cms/publish" && req.method === "POST") {
+    const timestamp = new Date().toISOString().replace("T", " ").slice(0, 19);
+    const gitCmd = `git add "data/cms-data.json" && git commit -m "NeuralCMS update: ${timestamp}" && git push origin main`;
+
+    exec(gitCmd, { cwd: root }, (error, stdout, stderr) => {
+      if (error) {
+        // If nothing to commit, it's still considered synced
+        if ((stdout + stderr).includes("nothing to commit")) {
+          res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+          res.end(JSON.stringify({ ok: true, message: "Already up to date on GitHub main branch.", output: stdout }));
+          return;
+        }
+        res.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+        res.end(JSON.stringify({ ok: false, error: stderr || error.message }));
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      res.end(JSON.stringify({ ok: true, message: "Successfully committed & pushed live to GitHub Pages!", output: stdout }));
+    });
+    return;
+  }
+
+  // 2. Persistent JSON API for NEURAL.CMS Admin Command Deck
   if (urlPath === "/api/cms") {
     if (req.method === "GET") {
       if (fs.existsSync(dataFile)) {
@@ -44,7 +68,7 @@ http.createServer((req, res) => {
       let body = "";
       req.on("data", (chunk) => {
         body += chunk;
-        if (body.length > 2 * 1024 * 1024) req.destroy();
+        if (body.length > 5 * 1024 * 1024) req.destroy();
       });
       req.on("end", () => {
         try {
@@ -71,10 +95,13 @@ http.createServer((req, res) => {
   }
 
   const ext = path.extname(filePath).toLowerCase();
-  res.writeHead(200, { "Content-Type": mime[ext] || "application/octet-stream" });
+  const headers = { "Content-Type": mime[ext] || "application/octet-stream" };
+  if (ext === ".json") {
+    headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+  }
+  res.writeHead(200, headers);
   fs.createReadStream(filePath).pipe(res);
 }).listen(port, "127.0.0.1", () => {
   console.log(`NEURAL.OS + CMS Server running at http://localhost:${port}`);
   console.log(`Admin Command Deck: http://localhost:${port}/admin.html`);
 });
-

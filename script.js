@@ -587,10 +587,21 @@
     if (firstEl && p.firstName) {
       firstEl.textContent = p.firstName;
       firstEl.dataset.value = p.firstName;
+      if (isLiveUpdate) scrambleElement(firstEl, 480);
     }
     if (lastEl && p.lastName) {
       lastEl.textContent = p.lastName;
       lastEl.dataset.value = p.lastName;
+      if (isLiveUpdate) scrambleElement(lastEl, 480);
+    }
+
+    // Top HUD brand and browser tab title
+    const brandTextEl = document.querySelector(".brand-text");
+    if (brandTextEl && (p.firstName || p.lastName)) {
+      brandTextEl.innerHTML = `${escapeHtml(p.firstName || "")} <em>${escapeHtml(p.lastName || "")}</em>`;
+    }
+    if (p.firstName && p.lastName) {
+      document.title = `${p.firstName} ${p.lastName} — ${p.headline || "Senior Lecturer & AI Expert"}`;
     }
 
     const availTextEl = document.getElementById("hero-avail-text");
@@ -1172,10 +1183,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     if (CMS) {
-      applyCmsDataToDOM(activeCmsData, false);
-      if (!isInstantPreview) {
-        try { CMS.recordPageView(); } catch { /* ignore */ }
-      }
+      applyCmsDataToDOM(CMS.loadData(), false);
       CMS.syncFromServerIfAvailable().then((remoteData) => {
         if (remoteData) applyCmsDataToDOM(remoteData, false);
       });
@@ -1183,6 +1191,9 @@
         applyCmsDataToDOM(freshData, true);
         showToast("LIVE UPDATE RECEIVED FROM ADMIN DECK");
       });
+      if (!isInstantPreview) {
+        try { CMS.recordPageView(); } catch { /* ignore */ }
+      }
     }
 
     initNeuralCanvas();

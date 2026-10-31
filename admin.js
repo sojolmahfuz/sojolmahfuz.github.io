@@ -1279,15 +1279,7 @@
     });
 
     $("#export-json-btn")?.addEventListener("click", () => {
-      const blob = new Blob([JSON.stringify(cmsData, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `al-amin-mahfuz-cms-backup-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      CMS.exportJson();
       showToast("Portfolio JSON snapshot exported!");
     });
 
@@ -1296,15 +1288,16 @@
       if (!file) return;
       try {
         const text = await file.text();
-        const parsed = JSON.parse(text);
-        if (!parsed || typeof parsed !== "object" || !parsed.profile) {
-          throw new Error("Invalid snapshot schema");
+        const res = CMS.importJson(text);
+        if (res.ok) {
+          cmsData = res.data;
+          persistAndRefresh("Snapshot imported & synced to website!");
+          populateProfileForm();
+        } else {
+          showToast(res.error || "Invalid snapshot.");
         }
-        cmsData = parsed;
-        persistAndRefresh("Snapshot imported & synced to website!");
-        populateProfileForm();
-      } catch {
-        showToast("Invalid JSON snapshot file.");
+      } catch (err) {
+        showToast("Invalid JSON file: " + err.message);
       } finally {
         e.target.value = "";
       }
@@ -1319,6 +1312,86 @@
       renderAll();
       showToast("Portfolio restored to 2026 CV defaults!");
     });
+
+    // Populate saved GitHub PAT
+    const patInput = $("#gh-pat-token");
+    if (patInput) {
+      patInput.value = CMS.getSavedGitHubPat() || "";
+    }
+
+    $("#save-pat-btn")?.addEventListener("click", () => {
+      const val = $("#gh-pat-token")?.value.trim() || "";
+      CMS.saveGitHubPat(val);
+      showToast(val ? "GitHub Token saved securely in browser vault!" : "GitHub Token cleared.");
+    });
+
+    async function triggerLivePublish() {
+      const statusBox = $("#publish-status-box");
+      const showStatus = (msg, isErr = false) => {
+        if (statusBox) {
+          statusBox.style.display = "block";
+          statusBox.style.color = isErr ? "var(--rose)" : "var(--emerald)";
+          statusBox.textContent = msg;
+        }
+        showToast(msg);
+      };
+
+      showStatus("Initiating live publish to GitHub Pages...");
+
+      // 1. If running on local server with Node backend, try /api/cms/publish first
+      if (window.location.protocol !== "file:") {
+        try {
+          const localRes = await fetch("/api/cms/publish", { method: "POST" });
+          if (localRes.ok) {
+            const resJson = await localRes.json();
+            if (resJson.ok) {
+              markSynced("LIVE ON GITHUB");
+              showStatus("✓ " + (resJson.message || "Changes pushed to GitHub main branch! Live in ~30s."));
+              return;
+            }
+          }
+        } catch {
+          // Not on local server with /api/cms/publish, or on GitHub Pages static host
+        }
+      }
+
+      // 2. Direct GitHub API Sync (for GitHub Pages static host or remote deployments)
+      let token = CMS.getSavedGitHubPat();
+      if (!token) {
+        const inputVal = $("#gh-pat-token")?.value.trim();
+        if (inputVal) {
+          token = inputVal;
+          CMS.saveGitHubPat(token);
+        }
+      }
+
+      if (!token) {
+        const promptVal = window.prompt(
+          "Enter your GitHub Personal Access Token (repo scope) to publish directly to GitHub Pages:\n(Or create one at https://github.com/settings/tokens)",
+          ""
+        );
+        if (!promptVal || !promptVal.trim()) {
+          showStatus("Publish cancelled: GitHub Personal Access Token required.", true);
+          return;
+        }
+        token = promptVal.trim();
+        CMS.saveGitHubPat(token);
+        const tokenInput = $("#gh-pat-token");
+        if (tokenInput) tokenInput.value = token;
+      }
+
+      showStatus("Committing data/cms-data.json directly to GitHub repository...");
+      const res = await CMS.publishToGitHub(token);
+      if (res.ok) {
+        markSynced("PUBLISHED TO GITHUB");
+        showStatus("✓ PUBLISHED LIVE TO GITHUB PAGES! GitHub is deploying changes (live in ~45s).");
+      } else {
+        showStatus("✗ GitHub API Publish Error: " + res.error, true);
+      }
+    }
+
+    $("#btn-top-publish")?.addEventListener("click", triggerLivePublish);
+    $("#publish-github-btn")?.addEventListener("click", triggerLivePublish);
   }
 
   /* -------------------- 13. ACTION BUTTON WIRING & LIVE SYNC -------------------- */
