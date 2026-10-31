@@ -753,17 +753,40 @@
 
     // 3. Post to Firebase Cloud Realtime Database if configured
     const cfg = getDatabaseConfig();
-    if (cfg.firebaseUrl) {
+    const dbUrl = (cfg.databaseURL || cfg.firebaseUrl || "").replace(/\/+$/, "");
+    if (dbUrl) {
       try {
-        const cleanUrl = cfg.firebaseUrl.replace(/\/+$/, "");
-        fetch(`${cleanUrl}/messages.json`, {
+        fetch(`${dbUrl}/messages.json`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(entry)
-        }).catch(() => {});
+        }).catch((err) => console.warn("Firebase message post async error:", err));
       } catch (err) {
         console.warn("Firebase message post error:", err);
       }
+    }
+
+    // 4. Free Direct Cloud Email Delivery (FormSubmit.co - 100% Free Forever, No Credit Card)
+    try {
+      fetch("https://formsubmit.co/ajax/sojol.cub@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          _subject: `[Portfolio Transmission] ${entry.topic} — from ${entry.name}`,
+          _template: "table",
+          _captcha: "false",
+          name: entry.name,
+          email: entry.email,
+          topic: entry.topic,
+          message: entry.message,
+          timestamp: entry.createdAt
+        })
+      }).catch(() => {});
+    } catch {
+      // ignore
     }
 
     return entry;
